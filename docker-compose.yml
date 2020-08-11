@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  app:
+    container_name: app-cucu
+    restart: 'always'
+    build: ./app
+    volumes:
+      - ./app:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - cucu.env
+    ports:
+      - "3000:3000"
+    command: bash -c "npm install && npm start"
+    depends_on:
+      - redis
+      - db
+    
+  db:
+    container_name: db-cucu
+    image: postgres:12.3
+    restart: always
+    environment:
+      POSTGRES_USER: ${USER_DB}
+      POSTGRES_PASSWORD: ${PASSWORD_DB}
+      POSTGRES_DB: ${NAME_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db:/var/lib/postgresql/data
+
+  redis:
+    container_name: redis-cucu
+    image: redis:6.0.4
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis-data:/data
+    

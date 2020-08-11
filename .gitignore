@@ -1,0 +1,17 @@
+.env
+.DS_Store
+
+node_modules/
+build/
+database/
+redis-data/
+/db/
+
+package-lock.json
+npm-debug.log
+sipgerd.env
+db.env
+
+app/node_modules/
+app/generated/
+app/package-lock.json
