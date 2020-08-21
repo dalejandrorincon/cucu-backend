@@ -7,6 +7,7 @@ const {
 } = require('../middlewares/auth');
 
 router.get('/', controller.index);
+router.get('/translators', controller.getTranslators);
 router.get('/:id', controller.getUser);
 router.post('/', controller.store);
 router.put('/', isAuthenticated, controller.update);

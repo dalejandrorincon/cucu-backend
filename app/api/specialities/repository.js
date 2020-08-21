@@ -1,5 +1,5 @@
 const Base = require('../base.repository');
-const Language = require('./entity');
+const Speciality = require('./entity');
 
 const fields = [
   'name',
@@ -12,16 +12,16 @@ class Repository extends Base {
   }
 
   getModel() {
-    return Language;
+    return Speciality;
   }
 
-  getAllLanguages() {
+  getAllSpecialities() {
     return this.model
       .query()
       .where("deleted", false);
   }
 
-  getLanguages(page, page_limit, name) {
+  getSpecialities(page, page_limit, name) {
     return this.model
       .query()
       .where("deleted", false)

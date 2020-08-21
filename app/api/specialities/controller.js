@@ -1,8 +1,5 @@
-const usersRepository = require('./repository');
-const bcrypt = require('bcryptjs');
-const { decodeToken } = require('../../utils/helpers');
-
-const { validationResult } = require('express-validator');
+const specialityRepository = require('./repository');
+//const { validationResult } = require('express-validator');
 
 
 async function index(req, res) {
@@ -11,22 +8,17 @@ async function index(req, res) {
         query: {
             page = 1,
             page_limit = 10,
-            name = '',
-            email='',
-            disabled='',
-            city_id='',
-            department_id='',
-            country_id=''
+            name = ''
         }
     } = req;
 
     try {
-        const users = await usersRepository.getUsers(page, page_limit, name, email, disabled, city_id, department_id, country_id);
+        const specialities = await specialityRepository.getSpecialities(page, page_limit, name);
         return res.status(200).send({
-            ...users,
+            ...specialities,
             page: parseInt(page),
-            pages: Math.ceil(users.total / page_limit),
-            total: users.total
+            pages: Math.ceil(specialities.total / page_limit),
+            total: specialities.total
         });
     } catch (error) {
         console.error(error);
@@ -34,53 +26,26 @@ async function index(req, res) {
     }
 }
 
-async function getTranslators(req, res) {
 
-    let {
-        query: {
-            page = 1,
-            page_limit = 10,
-            name = '',
-            speciality_id = '',
-            languages = '',
-            grade = '',
-            experience = '',
-            availability = '',
-            price_hour = '',
-            price_minute = ''
-        }
-    } = req;
-
+async function getAll(req, res) {
     try {
-        const users = await usersRepository.getTranslators(page, page_limit, name, speciality_id, languages, grade, experience, availability, price_hour, price_minute);
-        return res.status(200).send({
-            ...users,
-            page: parseInt(page),
-            pages: Math.ceil(users.total / page_limit),
-            total: users.total
-        });
+        const specialities = await specialityRepository.getAllSpecialities();
+        return res.status(200).send(specialities);
     } catch (error) {
         console.error(error);
         return res.status(500).send({ message: error.message });
     }
 }
 
-async function getUser(req, res) {
-
+async function index(req, res) {
     try {
-
-        const {
-            params: { id }
-        } = req;
-
-        //return getPermissions(req, res, id)
-
+        const specialities = await specialityRepository.find().orderBy('name');
+        return res.status(200).send(specialities);
     } catch (error) {
         console.error(error);
         return res.status(500).send({ message: error.message });
     }
 }
-
 
 async function store(req, res) {
     try {
@@ -91,20 +56,16 @@ async function store(req, res) {
                 .send({ errors: errors.formatWith(formatError).mapped() });
         else {
             const { body } = req;
-            const { password } = body;
-
             console.log(req.body)
             //console.log(body)
 
-            await usersRepository.create({
-                ...body,
-                password: bcrypt.hashSync(password, bcrypt.genSaltSync(10)),
-
+            await specialityRepository.create({
+                ...body
             });
 
             return res
                 .status(201)
-                .send({ message: 'Usuario creado exitosamente' });
+                .send({ message: 'País creado exitosamente' });
         }
     } catch (error) {
         console.error(error);
@@ -121,24 +82,18 @@ async function update(req, res) {
                 .send({ errors: errors.formatWith(formatError).mapped() });
         else {
             const {
-                headers: { authorization },
+                params: { id },
                 body
             } = req;
-
-            const tokenUser = await decodeToken(authorization.replace("Bearer ", ""));
-
-            if (body.password) {
-                body.password = bcrypt.hashSync(body.password, bcrypt.genSaltSync(10))
-            }
-
-            await usersRepository.update(
+            
+            await specialityRepository.update(
                 { ...body },
-                { id: tokenUser }
+                { id: id }
             )
 
             return res
                 .status(201)
-                .send({ message: 'Usuario actualizado exitosamente' });
+                .send({ message: 'País actualizado exitosamente' });
         }
     } catch (error) {
         console.error(error);
@@ -159,11 +114,11 @@ async function remove(req, res) {
                 params: { id }
             } = req;
             
-            await usersRepository.deleteById(id)
+            await specialityRepository.deleteById(id)
 
             return res
                 .status(201)
-                .send({ message: 'Usuario removido exitosamente' });
+                .send({ message: 'País removido exitosamente' });
         }
     } catch (error) {
         console.error(error);
@@ -173,9 +128,8 @@ async function remove(req, res) {
 
 module.exports = {
     index,
-    getUser,
-    getTranslators,
     store,
     update,
-    remove
+    remove,
+    getAll
 };

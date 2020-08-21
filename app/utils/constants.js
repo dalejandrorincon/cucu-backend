@@ -4,7 +4,8 @@ const TABLES = {
     departments: 'departments',
     cities: 'cities',
     languages: 'languages',
-    translation_services: 'translation_services'
+    translation_services: 'translation_services',
+    specialities: 'specialities'
 };
 
 const REGEX = {
@@ -24,6 +25,9 @@ const VALIDATION_ERRORS = {
     BETWEEN: (field, one, two) => `${field} debe estar entre ${one} y ${two}`,
     FILE_NOT_ALLOWED: () => "Archivo no permitido"
 };
+
+const SERVICE_STATUSES = ['cancelled'];
+
 
 module.exports = {
     TABLES,

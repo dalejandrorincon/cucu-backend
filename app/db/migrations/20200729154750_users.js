@@ -12,14 +12,15 @@ exports.up = function(knex) {
         table.string('role').notNull();
 
         table.string('rate');
-        table.string('address');
+        table.string('address_1');
+        table.string('address_2');
+
         table.string('nationality');
         table.string('description');
         
-        table.string('languages');
-        table.string('certifications');
-        table.string('specialities');
-        table.string('work_experience');
+        table.jsonb('certifications');
+        table.jsonb('specialities');
+        table.jsonb('work_experience');
 
         table.boolean('disabled').notNullable().defaultTo(false);
         table.boolean('deleted').notNullable().defaultTo(false);
