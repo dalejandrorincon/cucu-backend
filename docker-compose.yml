@@ -21,10 +21,8 @@ services:
     container_name: db-cucu
     image: postgres:12.3
     restart: always
-    environment:
-      POSTGRES_USER: ${USER_DB}
-      POSTGRES_PASSWORD: ${PASSWORD_DB}
-      POSTGRES_DB: ${NAME_DB}
+    env_file:
+      - db.env
     ports:
       - "5432:5432"
     volumes:
