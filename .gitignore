@@ -9,7 +9,7 @@ redis-data/
 
 package-lock.json
 npm-debug.log
-sipgerd.env
+cucu.env
 db.env
 
 app/node_modules/
