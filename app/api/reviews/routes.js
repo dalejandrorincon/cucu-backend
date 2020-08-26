@@ -3,17 +3,13 @@ const router = express.Router();
 const controller = require('./controller');
 
 router.get('/', controller.index);
-router.get('/translator', controller.servicesByTranslator);
 router.get('/all', controller.getAll);
-router.get('/:id', controller.getService);
+router.get('/translator', controller.reviewsByTranslator);
+router.get('/client', controller.reviewsByClient);
 
 router.post('/', controller.store);
-router.put('/cancel/:id', controller.cancel);
-router.put('/start/:id', controller.start);
-router.put('/finish/:id', controller.finish);
-router.put('/reprogram/:id', controller.update);
 router.put('/:id', controller.update);
-
 router.delete('/:id', controller.remove);
+
 
 module.exports = router;

@@ -10,6 +10,8 @@ exports.up = function(knex) {
         table.string('length');
         table.string('platform');
         table.datetime('date');
+        table.datetime('start_date');
+        table.datetime('end_date');
         table.boolean('record');
         table.string('files_urls');
         table.string('description');

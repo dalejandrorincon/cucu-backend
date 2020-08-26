@@ -5,7 +5,8 @@ const TABLES = {
     cities: 'cities',
     languages: 'languages',
     translation_services: 'translation_services',
-    specialities: 'specialities'
+    specialities: 'specialities',
+    reviews: 'reviews'
 };
 
 const REGEX = {

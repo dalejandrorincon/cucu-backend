@@ -65,7 +65,7 @@ async function store(req, res) {
 
             return res
                 .status(201)
-                .send({ message: 'País creado exitosamente' });
+                .send({ message: 'Lenguaje creado exitosamente' });
         }
     } catch (error) {
         console.error(error);
@@ -93,7 +93,7 @@ async function update(req, res) {
 
             return res
                 .status(201)
-                .send({ message: 'País actualizado exitosamente' });
+                .send({ message: 'Lenguaje actualizado exitosamente' });
         }
     } catch (error) {
         console.error(error);
@@ -118,7 +118,7 @@ async function remove(req, res) {
 
             return res
                 .status(201)
-                .send({ message: 'País removido exitosamente' });
+                .send({ message: 'Lenguaje removido exitosamente' });
         }
     } catch (error) {
         console.error(error);

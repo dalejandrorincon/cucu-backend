@@ -54,7 +54,7 @@ exports.down = (knex) => {
       'country_id', 
       'language_1', 
       'language_2', 
-      'language_2' 
+      'language_3' 
     );
   });
 };

@@ -1,4 +1,4 @@
-const departmentRepository = require('./repository');
+const countryRepository = require('./repository');
 //const { validationResult } = require('express-validator');
 
 
@@ -13,12 +13,12 @@ async function index(req, res) {
     } = req;
 
     try {
-        const departments = await departmentRepository.getDepartments(page, page_limit, name);
+        const countries = await countryRepository.getCountries(page, page_limit, name);
         return res.status(200).send({
-            ...departments,
+            ...countries,
             page: parseInt(page),
-            pages: Math.ceil(departments.total / page_limit),
-            total: departments.total
+            pages: Math.ceil(countries.total / page_limit),
+            total: countries.total
         });
     } catch (error) {
         console.error(error);
@@ -29,8 +29,8 @@ async function index(req, res) {
 
 async function getAll(req, res) {
     try {
-        const departments = await departmentRepository.getAllDepartments();
-        return res.status(200).send(departments);
+        const countries = await countryRepository.getAllCountries();
+        return res.status(200).send(countries);
     } catch (error) {
         console.error(error);
         return res.status(500).send({ message: error.message });
@@ -39,8 +39,8 @@ async function getAll(req, res) {
 
 async function index(req, res) {
     try {
-        const departments = await departmentRepository.find().orderBy('name');
-        return res.status(200).send(departments);
+        const countries = await countryRepository.find().orderBy('name');
+        return res.status(200).send(countries);
     } catch (error) {
         console.error(error);
         return res.status(500).send({ message: error.message });
@@ -49,24 +49,24 @@ async function index(req, res) {
 
 async function store(req, res) {
     try {
-        /* const errors = validationResult(req);
+        const errors = validationResult(req);
         if (!errors.isEmpty())
             return res
                 .status(409)
                 .send({ errors: errors.formatWith(formatError).mapped() });
-        else { */
+        else {
             const { body } = req;
             console.log(req.body)
             //console.log(body)
 
-            await departmentRepository.create({
+            await countryRepository.create({
                 ...body
             });
 
             return res
                 .status(201)
                 .send({ message: 'País creado exitosamente' });
-        //}
+        }
     } catch (error) {
         console.error(error);
         return res.status(500).send({ message: error.message });
@@ -75,18 +75,18 @@ async function store(req, res) {
 
 async function update(req, res) {
     try {
-        /* const errors = validationResult(req);
+        const errors = validationResult(req);
         if (!errors.isEmpty())
             return res
                 .status(409)
                 .send({ errors: errors.formatWith(formatError).mapped() });
-        else { */
+        else {
             const {
                 params: { id },
                 body
             } = req;
             
-            await departmentRepository.update(
+            await countryRepository.update(
                 { ...body },
                 { id: id }
             )
@@ -94,7 +94,7 @@ async function update(req, res) {
             return res
                 .status(201)
                 .send({ message: 'País actualizado exitosamente' });
-        //}
+        }
     } catch (error) {
         console.error(error);
         return res.status(500).send({ message: error.message });
@@ -104,22 +104,22 @@ async function update(req, res) {
 
 async function remove(req, res) {
     try {
-        /* const errors = validationResult(req);
+        const errors = validationResult(req);
         if (!errors.isEmpty())
             return res
                 .status(409)
                 .send({ errors: errors.formatWith(formatError).mapped() });
-        else { */
+        else {
             const {
                 params: { id }
             } = req;
             
-            await departmentRepository.deleteById(id)
+            await countryRepository.deleteById(id)
 
             return res
                 .status(201)
                 .send({ message: 'País removido exitosamente' });
-        //}
+        }
     } catch (error) {
         console.error(error);
         return res.status(500).send({ message: error.message });

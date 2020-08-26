@@ -9,6 +9,7 @@ const cities = require('./cities');
 const languages = require('./languages');
 const translation_services = require('./translation_services');
 const specialities = require('./specialities');
+const reviews = require('./reviews');
 
 routes.use('/users', users);
 routes.use('/auth', auth);
@@ -18,5 +19,6 @@ routes.use('/cities', cities);
 routes.use('/languages', languages);
 routes.use('/translation_services', translation_services);
 routes.use('/specialities', specialities);
+routes.use('/reviews', reviews);
 
 module.exports = routes;
