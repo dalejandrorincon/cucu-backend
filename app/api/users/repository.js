@@ -25,6 +25,7 @@ const fields = [
   'specialities',
   'certifications',
   'work_experience',
+  'unavailability'
 ];
 
 class Repository extends Base {

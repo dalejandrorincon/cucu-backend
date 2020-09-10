@@ -6,7 +6,9 @@ const TABLES = {
     languages: 'languages',
     translation_services: 'translation_services',
     specialities: 'specialities',
-    reviews: 'reviews'
+    reviews: 'reviews',
+    transactions: 'transactions',
+    unavailabilities: 'unavailabilities'
 };
 
 const REGEX = {
