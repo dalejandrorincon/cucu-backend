@@ -73,7 +73,17 @@ async function getUser(req, res) {
             params: { id }
         } = req;
 
-        //return getPermissions(req, res, id)
+        let user = await usersRepository.findById(id);
+
+        if(user){
+            delete user.password
+            return res.status(200).send({
+                user
+            });
+        }else{
+            return res.status(500).send({ message: "Usuario no encontrado" });
+        }
+
 
     } catch (error) {
         console.error(error);
