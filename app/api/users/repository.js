@@ -25,7 +25,7 @@ const fields = [
   'specialities',
   'certifications',
   'work_experience',
-  'unavailability'
+  'unavailable'
 ];
 
 class Repository extends Base {
@@ -61,7 +61,8 @@ class Repository extends Base {
         'language_3',
         'specialities',
         'certifications',
-        'work_experience'
+        'work_experience',
+        'unavailable'
       )
       .where("deleted", false)
       .orderBy('created_at')
@@ -123,7 +124,8 @@ class Repository extends Base {
         'language_3',
         'certifications',
         'specialities',
-        'work_experience'
+        'work_experience',
+        'unavailable'
       )
       .where("deleted", false)
       .where("role", "translator")
@@ -175,6 +177,7 @@ class Repository extends Base {
         'languages',
         'specialties',
         'work_experience',
+        'unavailable',
         'disabled'
       )
       .where("deleted", false)

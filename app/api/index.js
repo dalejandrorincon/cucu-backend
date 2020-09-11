@@ -12,6 +12,7 @@ const specialities = require('./specialities');
 const reviews = require('./reviews');
 const payments = require('./payments');
 const transactions = require('./transactions');
+const unavailabilities = require('./unavailabilities');
 
 routes.use('/users', users);
 routes.use('/auth', auth);
@@ -24,5 +25,6 @@ routes.use('/specialities', specialities);
 routes.use('/reviews', reviews);
 routes.use('/payments', payments);
 routes.use('/transactions', transactions);
+routes.use('/unavailabilities', unavailabilities);
 
 module.exports = routes;

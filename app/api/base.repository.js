@@ -1,7 +1,7 @@
 const cleanFields = (data = {}, fields) => {
   if (!fields.length) return data;
   let model = {};
-  for (const i of fields) if (data[i]!==undefined) model[i] = data[i];
+  for (const i of fields) if (data[i]!=null || typeof data[i]==="boolean") model[i] = data[i];
   return model;
 };
 
@@ -33,8 +33,6 @@ class baseRepository {
   }
 
   update(data = {}, where = {}) {
-    console.log(data)
-    console.log(where)
     let info = cleanFields(data, this.fields);
     return this.model
       .query()

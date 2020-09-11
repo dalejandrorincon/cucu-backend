@@ -42,13 +42,15 @@ async function login(req, res) {
             }
 
             const isEqual = await bcrypt.compare(password, userPassword);
+            delete user.password
 
 
             if (isEqual) {
                 return saveSession(user).then((success) => {
                     return res.status(200).send({
                         message: 'Login Successful',
-                        token: createToken(user.id)
+                        token: createToken(user.id),
+                        user: user
                     });
                 }).catch((err) => {
                     console.error(err);

@@ -10,6 +10,8 @@ router.get('/', controller.index);
 router.get('/translators', controller.getTranslators);
 router.get('/:id', controller.getUser);
 router.post('/', controller.store);
+router.post('/set-unavailability', controller.setUnavailability);
+router.post('/set-availability', controller.setAvailability);
 router.put('/', isAuthenticated, controller.update);
 router.delete('/:id', controller.remove);
 

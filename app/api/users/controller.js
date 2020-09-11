@@ -171,11 +171,89 @@ async function remove(req, res) {
     }
 }
 
+
+async function setUnavailability(req, res) {
+
+    const { authorization } = req.headers;
+
+    if (!authorization) {
+        return res.status(401).send({
+            message: 'Olvidó autenticarse'
+        });
+    }
+
+    const token = authorization.replace("Bearer ", "")
+    const userId = await decodeToken(token);
+    const user = await usersRepository.findById(userId);
+    if (!user) return res.status(403).send({ message: 'Olvidó autenticarse' });
+
+    try {
+
+        if(user.role!="translator"){
+            return res.status(500).send({ message: "No es posible setear disponibilidad en este rol." });
+        }
+
+        await usersRepository.update(
+            { unavailable: true },
+            { id: userId }
+        )
+
+        return res
+            .status(201)
+            .send({ message: 'Usuario actualizado exitosamente' });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
+
+async function setAvailability(req, res) {
+
+    const { authorization } = req.headers;
+
+    if (!authorization) {
+        return res.status(401).send({
+            message: 'Olvidó autenticarse'
+        });
+    }
+
+    const token = authorization.replace("Bearer ", "")
+    const userId = await decodeToken(token);
+    const user = await usersRepository.findById(userId);
+    if (!user) return res.status(403).send({ message: 'Olvidó autenticarse' });
+
+    try {
+
+        if(user.role!="translator"){
+            return res.status(500).send({ message: "No es posible setear disponibilidad en este rol." });
+        }
+
+        await usersRepository.update(
+            { unavailable: false },
+            { id: userId }
+        )
+
+        return res
+            .status(201)
+            .send({ message: 'Usuario actualizado exitosamente' });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
+
+
 module.exports = {
     index,
     getUser,
     getTranslators,
     store,
     update,
-    remove
+    remove,
+    setUnavailability,
+    setAvailability
 };

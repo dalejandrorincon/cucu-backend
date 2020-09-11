@@ -1,5 +1,7 @@
 const unavailabilityRepository = require('./repository');
-//const { validationResult } = require('express-validator');
+const { validationResult } = require('express-validator');
+const helper = require('../../utils/helpers');
+const usersRepository = require('../users/repository');
 
 
 async function index(req, res) {
@@ -8,12 +10,11 @@ async function index(req, res) {
         query: {
             page = 1,
             page_limit = 10,
-            name = ''
         }
     } = req;
 
     try {
-        const unavailabilities = await unavailabilityRepository.getUnavailabilities(page, page_limit, name);
+        const unavailabilities = await unavailabilityRepository.getUnavailabilities(page, page_limit);
         return res.status(200).send({
             ...unavailabilities,
             page: parseInt(page),
@@ -81,7 +82,7 @@ async function getAll(req, res) {
 
 async function index(req, res) {
     try {
-        const unavailabilities = await unavailabilityRepository.find().orderBy('name');
+        const unavailabilities = await unavailabilityRepository.find();
         return res.status(200).send(unavailabilities);
     } catch (error) {
         console.error(error);

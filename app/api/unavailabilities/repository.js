@@ -2,7 +2,6 @@ const Base = require('../base.repository');
 const Unavailability = require('./entity');
 
 const fields = [
-  'name',
   'from',
   'to',
   'deleted',
@@ -29,7 +28,7 @@ class Repository extends Base {
     return this.model
       .query()
       .where("deleted", false)
-      .where("translation_services.client_id", userId)
+      .where("translator_id", userId)
       .orderBy('created_at')
       .page(page-1, page_limit)
   }

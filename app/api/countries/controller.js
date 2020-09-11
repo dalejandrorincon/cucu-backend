@@ -1,5 +1,5 @@
 const countryRepository = require('./repository');
-//const { validationResult } = require('express-validator');
+const { validationResult } = require('express-validator');
 
 
 async function index(req, res) {
