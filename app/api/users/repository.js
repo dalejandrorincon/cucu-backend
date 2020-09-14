@@ -19,9 +19,7 @@ const fields = [
   'address',
   'nationality',
   'description',
-  'language_1',
-  'language_2',
-  'language_3',
+  'languages',
   'specialities',
   'certifications',
   'work_experience',
@@ -56,9 +54,7 @@ class Repository extends Base {
         'address_1',
         'nationality',
         'description',
-        'language_1',
-        'language_2',
-        'language_3',
+        'languages',
         'specialities',
         'certifications',
         'work_experience',
@@ -119,9 +115,7 @@ class Repository extends Base {
         'address_1',
         'nationality',
         'description',
-        'language_1',
-        'language_2',
-        'language_3',
+        'languages',
         'certifications',
         'specialities',
         'work_experience',
@@ -148,9 +142,7 @@ class Repository extends Base {
       .andWhere(function () {
         if (languages) {
           let parsed = JSON.parse(languages)
-          this.orWhereIn("language_1", parsed)
-          this.orWhereIn("language_2", parsed)
-          this.orWhereIn("language_3", parsed)
+          this.whereJsonSupersetOf('languages', parsed)
         }
       })
   }

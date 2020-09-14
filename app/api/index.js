@@ -13,6 +13,7 @@ const reviews = require('./reviews');
 const payments = require('./payments');
 const transactions = require('./transactions');
 const unavailabilities = require('./unavailabilities');
+const platforms = require('./platforms');
 
 routes.use('/users', users);
 routes.use('/auth', auth);
@@ -26,5 +27,6 @@ routes.use('/reviews', reviews);
 routes.use('/payments', payments);
 routes.use('/transactions', transactions);
 routes.use('/unavailabilities', unavailabilities);
+routes.use('/platforms', platforms);
 
 module.exports = routes;

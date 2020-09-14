@@ -128,6 +128,7 @@ async function getAll(req, res) {
 }
 
 async function getService(req, res) {
+    console.log("etnrasas")
 
     try {
 
@@ -244,7 +245,7 @@ async function cancel(req, res) {
         }
 
         await servicesRepository.update(
-            { status: "cancelled" },
+            { status: "4" },
             { id: id }
         )
 
@@ -281,7 +282,7 @@ async function reprogram(req, res) {
         }
 
         await servicesRepository.update(
-            { status: "reprogrammed", date: date },
+            { status: "3", date: date },
             { id: id }
         )
 
@@ -314,7 +315,7 @@ async function start(req, res) {
         }
 
         await servicesRepository.update(
-            { status: "in_progress", start_date: moment().format() },
+            { status: "1", start_date: moment().format() },
             { id: id }
         )
 
@@ -347,7 +348,7 @@ async function finish(req, res) {
         }
 
         await servicesRepository.update(
-            { status: "finished", end_date: moment().format() },
+            { status: "2", end_date: moment().format() },
             { id: id }
         )
 

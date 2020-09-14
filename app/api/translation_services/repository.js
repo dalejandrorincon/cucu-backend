@@ -18,6 +18,7 @@ const fields = [
   'status',
   'client_id',
   'translator_id',
+  'platform_id',
   'deleted'
 ];
 
@@ -39,6 +40,39 @@ class Repository extends Base {
   getService(id){
     return this.model
       .query()
+      .select(
+        'translation_services.id',
+        'translation_services.service_site',
+        'translation_services.amount',
+        'translation_services.service_type',
+        'translation_services.url',
+        'translation_services.length',
+        'translation_services.date',
+        'translation_services.record',
+        'translation_services.files_urls',
+        'translation_services.description',
+        'translation_services.status',
+        'translation_services.client_id',
+        'translation_services.translator_id',
+        'translation_services.start_date',
+        'translation_services.end_date'
+
+      )
+      .where("translation_services.deleted", false)
+      .where("translation_services.id", id)
+      
+      .innerJoin('users as client', 'client.id', 'translation_services.client_id')
+      .innerJoin('users as translator', 'translator.id', 'translation_services.translator_id')
+
+      .withGraphFetched('client(selectNamesAndId)')
+      .withGraphFetched('translator(selectNamesAndId)')
+      .withGraphFetched('platform')
+
+      .modifiers({
+        selectNamesAndId(builder) {
+          builder.select('firstname', 'lastname', 'id');
+        }
+      })
   }
 
   getReviews(page, page_limit) {
@@ -59,7 +93,6 @@ class Repository extends Base {
         'translation_services.service_type',
         'translation_services.url',
         'translation_services.length',
-        'translation_services.platform',
         'translation_services.date',
         'translation_services.record',
         'translation_services.files_urls',
@@ -78,6 +111,8 @@ class Repository extends Base {
 
       .withGraphFetched('client(selectNamesAndId)')
       .withGraphFetched('translator(selectNamesAndId)')
+      .withGraphFetched('platform')
+
       .modifiers({
         selectNamesAndId(builder) {
           builder.select('firstname', 'lastname', 'id');
@@ -128,7 +163,6 @@ class Repository extends Base {
         'translation_services.service_type',
         'translation_services.url',
         'translation_services.length',
-        'translation_services.platform',
         'translation_services.date',
         'translation_services.start_date',
         'translation_services.end_date',
@@ -144,9 +178,12 @@ class Repository extends Base {
       
       .innerJoin('users as client', 'client.id', 'translation_services.client_id')
       .innerJoin('users as translator', 'translator.id', 'translation_services.translator_id')
+      .innerJoin('platforms as platform', 'platform.id', 'translation_services.platform_id')      
 
       .withGraphFetched('client(selectNamesAndId)')
       .withGraphFetched('translator(selectNamesAndId)')
+      .withGraphFetched('platform')
+
       .modifiers({
         selectNamesAndId(builder) {
           builder.select('firstname', 'lastname', 'id');
@@ -193,7 +230,6 @@ class Repository extends Base {
         'translation_services.service_type',
         'translation_services.url',
         'translation_services.length',
-        'translation_services.platform',
         'translation_services.date',
         'translation_services.start_date',
         'translation_services.end_date',
@@ -206,10 +242,10 @@ class Repository extends Base {
       )
       .where("translation_services.deleted", false)
       .where("translation_services.client_id", userId)
-      
+      .innerJoin('platforms as platform', 'platform.id', 'translation_services.platform_id')      
       .innerJoin('users as client', 'client.id', 'translation_services.client_id')
       .innerJoin('users as translator', 'translator.id', 'translation_services.translator_id')
-
+      .withGraphFetched('platform')
       .withGraphFetched('client(selectNamesAndId)')
       .withGraphFetched('translator(selectNamesAndId)')
       .modifiers({

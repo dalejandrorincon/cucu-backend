@@ -8,7 +8,8 @@ const TABLES = {
     specialities: 'specialities',
     reviews: 'reviews',
     transactions: 'transactions',
-    unavailabilities: 'unavailabilities'
+    unavailabilities: 'unavailabilities',
+    platforms: 'platforms'
 };
 
 const REGEX = {

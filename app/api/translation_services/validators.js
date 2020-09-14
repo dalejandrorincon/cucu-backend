@@ -119,8 +119,8 @@ module.exports = option => {
                             errorMessage: VALIDATION_ERRORS.REQUIRED_FIELD
                         },
                         isLength: {
-                            errorMessage: VALIDATION_ERRORS.MAX_LENGTH(100),
-                            options: { max: 100 }
+                            errorMessage: VALIDATION_ERRORS.MAX_LENGTH(500),
+                            options: { max: 500 }
                         }
                     },
                     status: {
