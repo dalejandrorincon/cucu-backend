@@ -234,6 +234,16 @@ async function getUser(req, res) {
     
                 } 
 
+                if(user.work_experience){
+                    let total_exp = 0
+                    user.work_experience.forEach(exp => {
+                        total_exp = total_exp + parseInt(exp.labor_months)
+                    });
+                    user.total_experience = total_exp
+                    user.total_experience_years = Math.floor(total_exp/12)
+                   
+                }
+
             return res.status(200).send({
                 user
             });
