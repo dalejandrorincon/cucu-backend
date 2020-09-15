@@ -7,7 +7,8 @@ const fields = [
   'amount',
   'service_type',
   'url',
-  'length',
+  'duration_amount',
+  'duration_type',
   'platform',
   'date',
   'start_date',
@@ -19,7 +20,7 @@ const fields = [
   'client_id',
   'translator_id',
   'platform_id',
-  'deleted'
+  'deleted',
 ];
 
 class Repository extends Base {
