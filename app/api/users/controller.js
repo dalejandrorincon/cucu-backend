@@ -1,6 +1,8 @@
 const usersRepository = require('./repository');
 const languagesRepository = require('../languages/repository');
 const specialitiesRepository = require('../specialities/repository');
+const reviewsRepository = require('../reviews/repository');
+
 const { formatError } = require('../../utils/helpers');
 
 const bcrypt = require('bcryptjs');
@@ -96,9 +98,10 @@ async function getTranslators(req, res) {
         const repoLanguages = await languagesRepository.getAllLanguages();
         const specialities = await specialitiesRepository.getAllSpecialities()
 
+        for (let i = 0; i < users.results.length; i++) {
 
-        users.results.forEach(element => {
-            //console.log(element.languages)
+            const element = users.results[i];
+
             if(element.languages){
                 element.languages.forEach(language => {
                     let newFrom = (repoLanguages.filter(lang => lang.id == language.from))
@@ -126,8 +129,28 @@ async function getTranslators(req, res) {
                 });
 
             }
-        });                   
+
+            let reviews = await  reviewsRepository.getUserReviews(element.id)
+            
+            element.rating = null
+
+            if(reviews.length){
+                let avg = 0
+                let total = 0
+                reviews.forEach(element => {
+                    if(element.grade){
+                        total = parseInt(element.grade) + total
+                    }
+                });
+                avg = total/reviews.length
+                element.rating = avg.toFixed(2)
+            }
+            
+        }
+
         
+
+
         return res.status(200).send({
             ...users,
             page: parseInt(page),

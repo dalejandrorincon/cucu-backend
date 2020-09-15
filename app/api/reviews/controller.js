@@ -38,12 +38,16 @@ async function userReviews(req, res) {
         let reviews = await reviewRepository.getUserReviews(id);
         let avg = 0
         let total = 0
-        reviews.forEach(element => {
-            if(element.grade){
-                total = parseInt(element.grade) + total
-            }
-        });
-        avg = total/reviews.length
+        if(reviews.length){
+            reviews.forEach(element => {
+                if(element.grade){
+                    total = parseInt(element.grade) + total
+                }
+            });
+            avg = total/reviews.length
+        }else{
+            avg = 0
+        }
 
         if(page_limit){
             reviews = reviews.slice(0, page_limit)
