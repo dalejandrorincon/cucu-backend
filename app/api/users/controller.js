@@ -148,8 +148,41 @@ async function getUser(req, res) {
 
         let user = await usersRepository.findById(id);
 
+        const repoLanguages = await languagesRepository.getAllLanguages();
+        const specialities = await specialitiesRepository.getAllSpecialities()
+
         if(user){
             delete user.password
+
+            
+                if(user.languages){
+                    user.languages.forEach(language => {
+                        let newFrom = (repoLanguages.filter(lang => lang.id == language.from))
+                        let newTo = (repoLanguages.filter(lang => lang.id == language.to))
+    
+                        if(newFrom[0]){
+                            language.from=newFrom[0]
+                        }
+    
+                        if(newTo[0]){
+                            language.to=newTo[0]
+                        }
+                    });
+                }
+    
+                //console.log(specialities)
+                if(user.specialities){
+                    let cached = user.specialities;
+                    user.specialities=[]
+                    cached.forEach(speciality => {
+                        let newSpeciality = (specialities.filter(spec => spec.id == speciality))
+                        if(newSpeciality[0]){
+                            user.specialities.push(newSpeciality)
+                        }
+                    });
+    
+                } 
+
             return res.status(200).send({
                 user
             });
