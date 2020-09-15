@@ -102,7 +102,7 @@ class Repository extends Base {
       })
   }
 
-  getTranslators(name, speciality_id, languages, grade, experience, availability, price_hour, price_minute) {
+  getTranslators(name, speciality_id, languages) {
     return this.model
       .query()
       .select(
@@ -135,6 +135,13 @@ class Repository extends Base {
         if(speciality_id){
           let parsed = JSON.parse(speciality_id)
           this.whereJsonSupersetOf('specialities', parsed)
+        }
+      })
+
+      .andWhere(function () {
+        if(languages){
+          let parsed = JSON.parse(languages)
+          this.whereJsonSupersetOf('languages', parsed)
         }
       })
 
