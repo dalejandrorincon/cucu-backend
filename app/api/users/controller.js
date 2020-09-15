@@ -1,6 +1,7 @@
 const usersRepository = require('./repository');
 const languagesRepository = require('../languages/repository');
 const specialitiesRepository = require('../specialities/repository');
+const { formatError } = require('../../utils/helpers');
 
 const bcrypt = require('bcryptjs');
 const { decodeToken } = require('../../utils/helpers');
