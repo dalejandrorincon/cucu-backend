@@ -34,6 +34,15 @@ class Repository extends Base {
       .page(page-1, page_limit)
   }
 
+  getUserReviews(userId) {
+    return this.model
+      .query()
+      .where("deleted", false)
+      .where("translator_id", userId)
+      .orderBy('created_at', 'desc')
+  }
+
+
   getReviewsTranslator(page, page_limit, grade, date, translator_id, client_id, service_id) {
     return this.model
       .query()

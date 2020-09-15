@@ -25,6 +25,42 @@ async function index(req, res) {
     }
 }
 
+async function userReviews(req, res) {
+
+    let {
+        params: { id },
+        query: {
+            page_limit = 10
+        }
+    } = req;
+
+    try {
+        let reviews = await reviewRepository.getUserReviews(id);
+        let avg = 0
+        let total = 0
+        reviews.forEach(element => {
+            if(element.grade){
+                total = parseInt(element.grade) + total
+            }
+        });
+        avg = total/reviews.length
+
+        if(page_limit){
+            reviews = reviews.slice(0, page_limit)
+        }
+
+        return res.status(200).send({
+            reviews,
+            total: reviews.length,
+            average: avg.toFixed(2)
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
+
 async function reviewsByTranslator(req, res) {
 
     let {
@@ -136,7 +172,7 @@ async function store(req, res) {
 
             return res
                 .status(201)
-                .send({ message: 'País creado exitosamente' });
+                .send({ message: 'Review creado exitosamente' });
         }
     } catch (error) {
         console.error(error);
@@ -164,7 +200,7 @@ async function update(req, res) {
 
             return res
                 .status(201)
-                .send({ message: 'País actualizado exitosamente' });
+                .send({ message: 'Review actualizado exitosamente' });
         }
     } catch (error) {
         console.error(error);
@@ -189,7 +225,7 @@ async function remove(req, res) {
 
             return res
                 .status(201)
-                .send({ message: 'País removido exitosamente' });
+                .send({ message: 'Review removido exitosamente' });
         }
     } catch (error) {
         console.error(error);
@@ -204,5 +240,6 @@ module.exports = {
     remove,
     getAll,
     reviewsByTranslator,
-    reviewsByClient
+    reviewsByClient,
+    userReviews
 };
