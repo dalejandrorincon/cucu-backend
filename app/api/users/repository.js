@@ -102,7 +102,7 @@ class Repository extends Base {
       })
   }
 
-  getTranslators(page, page_limit, name, speciality_id, languages, grade, experience, availability, price_hour, price_minute) {
+  getTranslators(name, speciality_id, languages, grade, experience, availability, price_hour, price_minute) {
     return this.model
       .query()
       .select(
@@ -139,7 +139,6 @@ class Repository extends Base {
       })
 
       .orderBy('created_at')
-      .page(page-1, page_limit)
       .andWhere(function () {
         if (name) {
           this.orWhere(raw('lower(unaccent(users."firstname"))'), 'like', `%${name}%`);

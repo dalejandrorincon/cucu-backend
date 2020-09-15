@@ -88,19 +88,20 @@ async function getTranslators(req, res) {
             grade = '',
             experience = '',
             availability = '',
-            price_hour = '',
-            price_minute = ''
+            min_price_minute = '',
+            max_price_minute = ''
         }
     } = req;
 
     try {
-        const users = await usersRepository.getTranslators(page, page_limit, name, speciality_id, languages, grade, experience, availability, price_hour, price_minute);
+        let users = await usersRepository.getTranslators(name, speciality_id, languages);
         const repoLanguages = await languagesRepository.getAllLanguages();
         const specialities = await specialitiesRepository.getAllSpecialities()
 
-        for (let i = 0; i < users.results.length; i++) {
+        
+        for (let i = 0; i < users.length; i++) {
 
-            const element = users.results[i];
+            const element = users[i];
 
             if(element.languages){
                 element.languages.forEach(language => {
@@ -131,7 +132,7 @@ async function getTranslators(req, res) {
             }
 
             let reviews = await  reviewsRepository.getUserReviews(element.id)
-            
+
             element.rating = null
 
             if(reviews.length){
@@ -148,14 +149,23 @@ async function getTranslators(req, res) {
             
         }
 
-        
+        if(grade){
+            users = users.filter(item => item.rating >= grade);
+        }
 
+        if(min_price_minute!='' && max_price_minute!=''){
+            users = users.filter(item => item.rate_minute >= min_price_minute && item.rate_minute <= max_price_minute)
+        }
 
+        let total = users.length
+      
+        users = users.slice((page - 1) * page_limit, page * page_limit)
+     
         return res.status(200).send({
-            ...users,
+            users,
             page: parseInt(page),
-            pages: Math.ceil(users.total / page_limit),
-            total: users.total
+            pages: Math.ceil(total / page_limit),
+            total: total
         });
     } catch (error) {
         console.error(error);
