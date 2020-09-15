@@ -1,4 +1,7 @@
 const usersRepository = require('./repository');
+const languagesRepository = require('../languages/repository');
+const specialitiesRepository = require('../specialities/repository');
+
 const bcrypt = require('bcryptjs');
 const { decodeToken } = require('../../utils/helpers');
 
@@ -22,8 +25,43 @@ async function index(req, res) {
 
     try {
         const users = await usersRepository.getUsers(page, page_limit, name, email, disabled, city_id, department_id, country_id);
+        const languages = await languagesRepository.getAllLanguages();
+        const specialities = await specialitiesRepository.getAllSpecialities()
+
+
+        users.results.forEach(element => {
+            //console.log(element.languages)
+            if(element.languages){
+                element.languages.forEach(language => {
+                    let newFrom = (languages.filter(lang => lang.id == language.from))
+                    let newTo = (languages.filter(lang => lang.id == language.to))
+
+                    if(newFrom[0]){
+                        language.from=newFrom[0]
+                    }
+
+                    if(newTo[0]){
+                        language.to=newTo[0]
+                    }
+                });
+            }
+
+            //console.log(specialities)
+            if(element.specialities){
+                let cached = element.specialities;
+                element.specialities=[]
+                cached.forEach(speciality => {
+                    let newSpeciality = (specialities.filter(spec => spec.id == speciality))
+                    if(newSpeciality[0]){
+                        element.specialities.push(newSpeciality)
+                    }
+                });
+
+            }
+        });
+        
         return res.status(200).send({
-            ...users,
+            users,
             page: parseInt(page),
             pages: Math.ceil(users.total / page_limit),
             total: users.total
@@ -53,6 +91,41 @@ async function getTranslators(req, res) {
 
     try {
         const users = await usersRepository.getTranslators(page, page_limit, name, speciality_id, languages, grade, experience, availability, price_hour, price_minute);
+        const repoLanguages = await languagesRepository.getAllLanguages();
+        const specialities = await specialitiesRepository.getAllSpecialities()
+
+
+        users.results.forEach(element => {
+            //console.log(element.languages)
+            if(element.languages){
+                element.languages.forEach(language => {
+                    let newFrom = (repoLanguages.filter(lang => lang.id == language.from))
+                    let newTo = (repoLanguages.filter(lang => lang.id == language.to))
+
+                    if(newFrom[0]){
+                        language.from=newFrom[0]
+                    }
+
+                    if(newTo[0]){
+                        language.to=newTo[0]
+                    }
+                });
+            }
+
+            //console.log(specialities)
+            if(element.specialities){
+                let cached = element.specialities;
+                element.specialities=[]
+                cached.forEach(speciality => {
+                    let newSpeciality = (specialities.filter(spec => spec.id == speciality))
+                    if(newSpeciality[0]){
+                        element.specialities.push(newSpeciality)
+                    }
+                });
+
+            }
+        });                   
+        
         return res.status(200).send({
             ...users,
             page: parseInt(page),

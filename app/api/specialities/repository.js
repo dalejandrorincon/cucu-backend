@@ -2,6 +2,7 @@ const Base = require('../base.repository');
 const Speciality = require('./entity');
 
 const fields = [
+  'id',
   'name',
   'deleted'
 ];

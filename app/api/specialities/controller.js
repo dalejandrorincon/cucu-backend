@@ -1,5 +1,5 @@
 const specialityRepository = require('./repository');
-//const { validationResult } = require('express-validator');
+const { validationResult } = require('express-validator');
 
 
 async function index(req, res) {
@@ -65,7 +65,7 @@ async function store(req, res) {
 
             return res
                 .status(201)
-                .send({ message: 'País creado exitosamente' });
+                .send({ message: 'Especialidad creado exitosamente' });
         }
     } catch (error) {
         console.error(error);
@@ -93,7 +93,7 @@ async function update(req, res) {
 
             return res
                 .status(201)
-                .send({ message: 'País actualizado exitosamente' });
+                .send({ message: 'Especialidad actualizado exitosamente' });
         }
     } catch (error) {
         console.error(error);
@@ -118,7 +118,7 @@ async function remove(req, res) {
 
             return res
                 .status(201)
-                .send({ message: 'País removido exitosamente' });
+                .send({ message: 'Especialidad removido exitosamente' });
         }
     } catch (error) {
         console.error(error);
