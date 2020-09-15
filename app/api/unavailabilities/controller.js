@@ -51,7 +51,7 @@ async function transactionsByUser(req, res) {
 
     try {
 
-        if(user.role!="translator"){
+        if(user.role!="2"){
             return res.status(500).send({ message: "No es posible solicitar disponibles en este rol." });
         }
 

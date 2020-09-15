@@ -307,7 +307,7 @@ async function setUnavailability(req, res) {
 
     try {
 
-        if(user.role!="translator"){
+        if(user.role!="2"){
             return res.status(500).send({ message: "No es posible setear disponibilidad en este rol." });
         }
 
@@ -344,7 +344,7 @@ async function setAvailability(req, res) {
 
     try {
 
-        if(user.role!="translator"){
+        if(user.role!="2"){
             return res.status(500).send({ message: "No es posible setear disponibilidad en este rol." });
         }
 

@@ -52,10 +52,11 @@ async function transactionsByUser(req, res) {
     try {
         let transactions
         switch(user.role){
-            case "translator":
+            case "2":
                 transactions = await transactionsRepository.getTransactionsByTranslator(page, page_limit);
                 break;
-            case "client":
+            case "3":
+            case "4":    
                 transactions = await transactionsRepository.getTransactionsByClient(page, page_limit);
                 break;
             default:

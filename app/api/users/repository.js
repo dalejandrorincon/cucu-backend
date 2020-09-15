@@ -23,6 +23,8 @@ const fields = [
   'specialities',
   'certifications',
   'work_experience',
+  'image_url',
+  'company_name',
   'unavailable'
 ];
 
@@ -58,6 +60,8 @@ class Repository extends Base {
         'specialities',
         'certifications',
         'work_experience',
+        'image_url',
+        'company_name',
         'unavailable'
       )
       .where("deleted", false)
@@ -119,10 +123,11 @@ class Repository extends Base {
         'certifications',
         'specialities',
         'work_experience',
+        'image_url',
         'unavailable'
       )
       .where("deleted", false)
-      .where("role", "translator")
+      .where("role", "2")
       .andWhere(function () {
         if(speciality_id){
           let parsed = JSON.parse(speciality_id)
@@ -170,6 +175,8 @@ class Repository extends Base {
         'specialties',
         'work_experience',
         'unavailable',
+        'image_url',
+        'company_name',
         'disabled'
       )
       .where("deleted", false)
