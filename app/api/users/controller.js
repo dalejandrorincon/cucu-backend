@@ -89,7 +89,9 @@ async function getTranslators(req, res) {
             experience = '',
             availability = '',
             min_price_minute = '',
-            max_price_minute = ''
+            max_price_minute = '',
+            min_experience = '',
+            max_experience = '',
         }
     } = req;
 
@@ -146,6 +148,16 @@ async function getTranslators(req, res) {
                 avg = total/reviews.length
                 element.rating = avg.toFixed(2)
             }
+
+            if(element.work_experience){
+                let total_exp = 0
+                element.work_experience.forEach(exp => {
+                    total_exp = total_exp + parseInt(exp.labor_months)
+                });
+                element.total_experience = total_exp
+                element.total_experience_years = Math.floor(total_exp/12)
+               
+            }
             
         }
 
@@ -155,6 +167,10 @@ async function getTranslators(req, res) {
 
         if(min_price_minute!='' && max_price_minute!=''){
             users = users.filter(item => item.rate_minute >= min_price_minute && item.rate_minute <= max_price_minute)
+        }
+
+        if(min_experience!='' && max_experience!=''){
+            users = users.filter(item => item.total_experience_years >= min_experience && item.total_experience_years <= max_experience)
         }
 
         let total = users.length
