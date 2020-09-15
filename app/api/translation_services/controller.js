@@ -3,7 +3,7 @@ const usersRepository = require('../users/repository');
 const { validationResult } = require('express-validator');
 const moment = require('moment');
 const helper = require('../../utils/helpers');
-
+const { imageUpload } = require('../../utils/file')
 
 async function index(req, res) {
 
@@ -364,6 +364,15 @@ async function finish(req, res) {
     }
 }
 
+async function uploadFile(req, res) {
+    try {
+        let file = await imageUpload(req, "services")
+        res.status(200).send({ file: JSON.parse(file[0]) })
+    } catch (e) {
+        console.log("error", e)
+        res.status(400).send({ error: e })
+    }
+}
 
 
 module.exports = {
@@ -377,5 +386,6 @@ module.exports = {
     reprogram,
     start,
     finish,
-    servicesByTranslator
+    servicesByTranslator,
+    uploadFile
 };

@@ -7,6 +7,7 @@ const bcrypt = require('bcryptjs');
 const { decodeToken } = require('../../utils/helpers');
 
 const { validationResult } = require('express-validator');
+const { imageUpload } = require('../../utils/file')
 
 
 async function index(req, res) {
@@ -362,6 +363,15 @@ async function setAvailability(req, res) {
     }
 }
 
+async function uploadImage(req, res) {
+    try {
+        let image = await imageUpload(req, "users")
+        res.status(200).send({ image: JSON.parse(image[0]) })
+    } catch (e) {
+        console.log("error", e)
+        res.status(400).send({ error: e })
+    }
+}
 
 
 module.exports = {
@@ -372,5 +382,6 @@ module.exports = {
     update,
     remove,
     setUnavailability,
-    setAvailability
+    setAvailability,
+    uploadImage
 };
