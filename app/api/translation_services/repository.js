@@ -89,7 +89,7 @@ class Repository extends Base {
       .page(page-1, page_limit)
   }
 
-  getServices(page, page_limit, name, status, service_site, service_type, client_id, translator_id) {
+  getServices(page, page_limit, name, status, service_site, service_type, client_id, translator_id, amount, min_date, max_date, sort_by, sort_order) {
     return this.model
       .query()
       .select(
@@ -158,11 +158,28 @@ class Repository extends Base {
           this.orWhere("translation_services.translator_id", translator_id);
         }
       })
-      .orderBy('translation_services.created_at')
+
+      .andWhere(function () {
+        if (amount) {
+          this.orWhere("translation_services.amount", amount);
+        }
+      })
+
+      .andWhere(function () {
+        if (min_date && max_date) {
+          console.log(min_date)
+          this.whereBetween("translation_services.date", [
+            min_date,
+            max_date
+          ]);
+        }
+      })
+
+      .orderBy('translation_services.'+sort_by, sort_order)
       .page(page-1, page_limit)
   }
 
-  getServicesByTranslator(page, page_limit, userId, name, status, service_site, service_type, client_id) {
+  getServicesByTranslator(page, page_limit, userId, name, status, service_site, service_type, client_id, amount, min_date, max_date, sort_by, sort_order) {
     return this.model
       .query()
       .select(
@@ -228,11 +245,29 @@ class Repository extends Base {
           this.orWhere("translation_services.client_id", client_id);
         }
       })
-      .orderBy('translation_services.date')
+
+      .andWhere(function () {
+        if (amount) {
+          this.orWhere("translation_services.amount", amount);
+        }
+      })
+
+      .andWhere(function () {
+        if (min_date && max_date) {
+          console.log(min_date)
+          this.whereBetween("translation_services.date", [
+            min_date,
+            max_date
+          ]);
+        }
+      })
+
+      .orderBy('translation_services.'+sort_by, sort_order)
+
       .page(page-1, page_limit)
   }
 
-  getServicesByClient(page, page_limit, userId, name, status, service_site, service_type, translator_id) {
+  getServicesByClient(page, page_limit, userId, name, status, service_site, service_type, translator_id, amount, min_date, max_date, sort_by, sort_order) {
     return this.model
       .query()
       .select(
@@ -295,7 +330,25 @@ class Repository extends Base {
           this.orWhere("translation_services.translator_id", translator_id);
         }
       })
-      .orderBy('translation_services.date')
+
+      .andWhere(function () {
+        if (amount) {
+          this.orWhere("translation_services.amount", amount);
+        }
+      })
+
+      .andWhere(function () {
+        if (min_date && max_date) {
+          console.log(min_date)
+          this.whereBetween("translation_services.date", [
+            min_date,
+            max_date
+          ]);
+        }
+      })
+
+      .orderBy('translation_services.'+sort_by, sort_order)
+
       .page(page-1, page_limit)
   }
 

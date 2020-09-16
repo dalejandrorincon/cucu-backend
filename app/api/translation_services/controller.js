@@ -17,11 +17,16 @@ async function index(req, res) {
             service_type  = '',
             client_id  = '',
             translator_id  = '',
+            amount = '',
+            min_date = '',
+            max_date = '',
+            sort_by = 'created_at',
+            sort_order = 'desc',
         }
     } = req;
 
     try {
-        const services = await servicesRepository.getServices(page, page_limit, name, status, service_site, service_type, client_id, translator_id);
+        const services = await servicesRepository.getServices(page, page_limit, name, status, service_site, service_type, client_id, translator_id, amount, min_date, max_date, sort_by, sort_order);
         return res.status(200).send({
             ...services,
             page: parseInt(page),
@@ -44,7 +49,12 @@ async function servicesByTranslator(req, res) {
             status = '', 
             service_site  = '',
             service_type  = '',
-            client_id  = ''
+            client_id  = '',
+            amount = '',
+            min_date = '',
+            max_date = '',
+            sort_by = 'created_at',
+            sort_order = 'desc',
         }
     } = req;
 
@@ -62,7 +72,7 @@ async function servicesByTranslator(req, res) {
     if (!user) return res.status(403).send({ message: 'Olvidó autenticarse' });
 
     try {
-        const services = await servicesRepository.getServicesByTranslator(page, page_limit, user.id, name, status, service_site, service_type, client_id);
+        const services = await servicesRepository.getServicesByTranslator(page, page_limit, user.id, name, status, service_site, service_type, client_id, amount, min_date, max_date, sort_by, sort_order);
         return res.status(200).send({
             ...services,
             page: parseInt(page),
@@ -85,7 +95,12 @@ async function servicesByClient(req, res) {
             status = '', 
             service_site  = '',
             service_type  = '',
-            translator_id  = ''
+            translator_id  = '',
+            amount = '',
+            min_date = '',
+            max_date = '',
+            sort_by = 'created_at',
+            sort_order = 'desc',
         }
     } = req;
 
@@ -103,7 +118,7 @@ async function servicesByClient(req, res) {
     if (!user) return res.status(403).send({ message: 'Olvidó autenticarse' });
 
     try {
-        const services = await servicesRepository.getServicesByClient(page, page_limit, user.id, name, status, service_site, service_type, translator_id);
+        const services = await servicesRepository.getServicesByClient(page, page_limit, user.id, name, status, service_site, service_type, translator_id, amount, min_date, max_date, sort_by, sort_order);
         return res.status(200).send({
             ...services,
             page: parseInt(page),
@@ -415,6 +430,7 @@ module.exports = {
     start,
     finish,
     servicesByTranslator,
+    servicesByClient,
     uploadFile,
     share
 };

@@ -5,6 +5,8 @@ const multer = require('multer')()
 
 router.get('/', controller.index);
 router.get('/translator', controller.servicesByTranslator);
+router.get('/client', controller.servicesByClient);
+
 router.get('/all', controller.getAll);
 router.get('/:id', controller.getService);
 
