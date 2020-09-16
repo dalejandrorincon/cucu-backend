@@ -147,6 +147,8 @@ async function getTranslators(req, res) {
             grade = '',
             min_price_minute = '',
             max_price_minute = '',
+            min_price_hour = '',
+            max_price_hour = '',
             min_experience = '',
             max_experience = '',
             approved_translator = '1',
@@ -239,7 +241,11 @@ async function getTranslators(req, res) {
         }
 
         if(min_price_minute!='' && max_price_minute!=''){
-            users = users.filter(item => item.rate_minute >= min_price_minute && item.rate_minute <= max_price_minute)
+            users = users.filter(item => parseInt(item.rate_minute) >= parseInt(min_price_minute) && parseInt(item.rate_minute) <= parseInt(max_price_minute))
+        }
+
+        if(min_price_hour!='' && max_price_hour!=''){
+            users = users.filter(item => parseInt(item.rate_hour) >= parseInt(min_price_hour) && parseInt(item.rate_hour) <= parseInt(max_price_hour))
         }
 
         if(min_experience!='' && max_experience!=''){
