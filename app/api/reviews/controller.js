@@ -7,12 +7,13 @@ async function index(req, res) {
     let {
         query: {
             page = 1,
-            page_limit = 10
+            page_limit = 10,
+            approved = "1"
         }
     } = req;
 
     try {
-        const reviews = await reviewRepository.getReviews(page, page_limit);
+        const reviews = await reviewRepository.getReviews(page, page_limit, approved);
         return res.status(200).send({
             ...reviews,
             page: parseInt(page),
@@ -30,12 +31,13 @@ async function userReviews(req, res) {
     let {
         params: { id },
         query: {
-            page_limit = 10
+            page_limit = 10,
+            approved = "1"
         }
     } = req;
 
     try {
-        let reviews = await reviewRepository.getUserReviews(id);
+        let reviews = await reviewRepository.getUserReviews(id, approved);
         let avg = 0
         let total = 0
         if(reviews.length){
@@ -75,7 +77,8 @@ async function reviewsByTranslator(req, res) {
             date = '',
             translator_id = '',
             client_id = '',
-            service_id = ''
+            service_id = '',
+            approved = "1"
         }
     } = req;
 
@@ -93,7 +96,7 @@ async function reviewsByTranslator(req, res) {
     if (!user) return res.status(403).send({ message: 'Olvidó autenticarse' });
 
     try {
-        const services = await servicesRepository.getReviewsByTranslator(page, page_limit, grade, date, translator_id, client_id, service_id);
+        const services = await servicesRepository.getReviewsByTranslator(page, page_limit, grade, date, translator_id, client_id, service_id, approved);
         return res.status(200).send({
             ...services,
             page: parseInt(page),
@@ -117,7 +120,8 @@ async function reviewsByClient(req, res) {
             date = '',
             translator_id = '',
             client_id = '',
-            service_id = ''
+            service_id = '',
+            approved = "1"
         }
     } = req;
 
@@ -135,7 +139,7 @@ async function reviewsByClient(req, res) {
     if (!user) return res.status(403).send({ message: 'Olvidó autenticarse' });
 
     try {
-        const services = await servicesRepository.getReviewsByClient(page, page_limit, grade, date, translator_id, client_id, service_id);
+        const services = await servicesRepository.getReviewsByClient(page, page_limit, grade, date, translator_id, client_id, service_id, approved);
         return res.status(200).send({
             ...services,
             page: parseInt(page),
@@ -237,6 +241,37 @@ async function remove(req, res) {
     }
 }
 
+async function approval(req, res) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty())
+            return res
+                .status(409)
+                .send({ errors: errors.formatWith(formatError).mapped() });
+        else {
+            const {
+                params: { id },
+                body: {approved}
+            } = req;
+
+            await reviewRepository.update(
+                { approved: approved },
+                { id: id }
+            )
+
+            return res
+                .status(201)
+                .send(await reviewRepository.findById(id));
+
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
+
+
 module.exports = {
     index,
     store,
@@ -245,5 +280,6 @@ module.exports = {
     getAll,
     reviewsByTranslator,
     reviewsByClient,
-    userReviews
+    userReviews,
+    approval
 };

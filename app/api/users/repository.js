@@ -292,7 +292,7 @@ class Repository extends Base {
         'admin_permissions'
       )
       .where("deleted", false)
-      .orderBy('created_at')
+      .orderBy('created_at', 'desc')
       .where("id", userId )
   }
 }

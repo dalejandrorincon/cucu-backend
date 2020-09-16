@@ -90,6 +90,12 @@ class Repository extends Base {
   }
 
   getServices(page, page_limit, name, status, service_site, service_type, client_id, translator_id, amount, min_date, max_date, sort_by, sort_order) {
+    if(!sort_by){
+      sort_by = "created_at"
+    }
+    if(!sort_order){
+      sort_order = "desc"
+    }
     return this.model
       .query()
       .select(
@@ -180,6 +186,12 @@ class Repository extends Base {
   }
 
   getServicesByTranslator(page, page_limit, userId, name, status, service_site, service_type, client_id, amount, min_date, max_date, sort_by, sort_order) {
+    if(!sort_by){
+      sort_by = "created_at"
+    }
+    if(!sort_order){
+      sort_order = "desc"
+    }
     return this.model
       .query()
       .select(
@@ -268,6 +280,12 @@ class Repository extends Base {
   }
 
   getServicesByClient(page, page_limit, userId, name, status, service_site, service_type, translator_id, amount, min_date, max_date, sort_by, sort_order) {
+    if(!sort_by){
+      sort_by = "created_at"
+    }
+    if(!sort_order){
+      sort_order = "desc"
+    }
     return this.model
       .query()
       .select(

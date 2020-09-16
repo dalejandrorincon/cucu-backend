@@ -8,7 +8,9 @@ const fields = [
   'deleted',
   'translator_id',
   'client_id',
-  'service_id'
+  'service_id', 
+  'description',
+  'approved'
 ];
 
 class Repository extends Base {
@@ -26,28 +28,31 @@ class Repository extends Base {
       .where("deleted", false);
   }
 
-  getReviews(page, page_limit) {
+  getReviews(page, page_limit, approved) {
     return this.model
       .query()
       .where("deleted", false)
+      .where("approved", approved)
       .orderBy('created_at')
       .page(page-1, page_limit)
   }
 
-  getUserReviews(userId) {
+  getUserReviews(userId, approved) {
     return this.model
       .query()
       .where("deleted", false)
+      .where("approved", approved)
       .where("translator_id", userId)
       .orderBy('created_at', 'desc')
   }
 
 
-  getReviewsTranslator(page, page_limit, grade, date, translator_id, client_id, service_id) {
+  getReviewsTranslator(page, page_limit, grade, date, translator_id, client_id, service_id, approved) {
     return this.model
       .query()
       .where("deleted", false)
       .where("translator_id", translator_id)
+      .where("approved", approved)
       .andWhere(function () {
         if (grade) {
           this.orWhere("grade", grade);
@@ -72,11 +77,12 @@ class Repository extends Base {
       .page(page-1, page_limit)
   }
 
-  getReviewsClient(page, page_limit, grade, date, translator_id, client_id, service_id) {
+  getReviewsClient(page, page_limit, grade, date, translator_id, client_id, service_id, approved) {
     return this.model
       .query()
       .where("deleted", false)
       .where("client_id", client_id)
+      .where("approved", approved)
       .andWhere(function () {
         if (grade) {
           this.orWhere("grade", grade);

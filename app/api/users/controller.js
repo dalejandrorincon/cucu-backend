@@ -194,7 +194,7 @@ async function getTranslators(req, res) {
 
             }
 
-            let reviews = await  reviewsRepository.getUserReviews(element.id)
+            let reviews = await  reviewsRepository.getUserReviews(element.id, true)
 
             element.rating = null
 
@@ -332,6 +332,22 @@ async function getUser(req, res) {
             if(user.role == "2"){
                 const services = await servicesRepository.getServicesByTranslator(1, 10, user.id)
                 user.total_services = services.total
+
+                let reviews = await  reviewsRepository.getUserReviews(user.id, "1")
+
+                user.rating = null
+
+                if(reviews.length){
+                    let avg = 0
+                    let total = 0
+                    reviews.forEach(element => {
+                        if(element.grade){
+                            total = parseInt(element.grade) + total
+                        }
+                    });
+                    avg = total/reviews.length
+                    user.rating = avg.toFixed(2)
+                }
                 
             }
             if(user.role == "3" || user.role == "4"){
