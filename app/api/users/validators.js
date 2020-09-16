@@ -49,10 +49,10 @@ module.exports = option => {
                     },
 
                     document: {
-                        isEmpty: {
+                        /* isEmpty: {
                             negated: true,
                             errorMessage: VALIDATION_ERRORS.REQUIRED_FIELD
-                        },
+                        }, */
                         isLength: {
                             errorMessage: VALIDATION_ERRORS.MAX_LENGTH(16),
                             options: { max: 16 }
