@@ -196,7 +196,7 @@ async function getTranslators(req, res) {
 
             }
 
-            let reviews = await  reviewsRepository.getUserReviews(element.id, true)
+            let reviews = await  reviewsRepository.getUserReviews(element.id, "1")
 
             element.rating = null
 
