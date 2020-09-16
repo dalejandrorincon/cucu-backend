@@ -1,5 +1,7 @@
 const reviewRepository = require('./repository');
 const { validationResult } = require('express-validator');
+const helper = require('../../utils/helpers');
+const usersRepository = require('../users/repository');
 
 
 async function index(req, res) {
@@ -96,12 +98,12 @@ async function reviewsByTranslator(req, res) {
     if (!user) return res.status(403).send({ message: 'Olvidó autenticarse' });
 
     try {
-        const services = await servicesRepository.getReviewsByTranslator(page, page_limit, grade, date, translator_id, client_id, service_id, approved);
+        const reviews = await reviewRepository.getReviewsTranslator(page, page_limit, grade, date, translator_id, client_id, service_id, approved);
         return res.status(200).send({
-            ...services,
+            ...reviews,
             page: parseInt(page),
-            pages: Math.ceil(services.total / page_limit),
-            total: services.total
+            pages: Math.ceil(reviews.total / page_limit),
+            total: reviews.total
         });
     } catch (error) {
         console.error(error);
@@ -139,12 +141,12 @@ async function reviewsByClient(req, res) {
     if (!user) return res.status(403).send({ message: 'Olvidó autenticarse' });
 
     try {
-        const services = await servicesRepository.getReviewsByClient(page, page_limit, grade, date, translator_id, client_id, service_id, approved);
+        const reviews = await reviewRepository.getReviewsClient(page, page_limit, grade, date, translator_id, client_id, service_id, approved);
         return res.status(200).send({
-            ...services,
+            ...reviews,
             page: parseInt(page),
-            pages: Math.ceil(services.total / page_limit),
-            total: services.total
+            pages: Math.ceil(reviews.total / page_limit),
+            total: reviews.total
         });
     } catch (error) {
         console.error(error);
