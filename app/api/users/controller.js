@@ -2,6 +2,9 @@ const usersRepository = require('./repository');
 const languagesRepository = require('../languages/repository');
 const specialitiesRepository = require('../specialities/repository');
 const reviewsRepository = require('../reviews/repository');
+const platformsRepository = require('../platforms/repository');
+const servicesRepository = require('../translation_services/repository');
+
 
 const { formatError } = require('../../utils/helpers');
 
@@ -76,6 +79,62 @@ async function index(req, res) {
     }
 }
 
+async function getClients(req, res) {
+
+    let {
+        query: {
+            page = 1,
+            page_limit = 10,
+            name = '',
+            sort_by = 'created_at',
+            sort_order = 'desc',
+            disabled = 'false'
+        }
+    } = req;
+
+    try {
+        const users = await usersRepository.getClients(page, page_limit, name, disabled, sort_by, sort_order);
+        
+        return res.status(200).send({
+            users,
+            page: parseInt(page),
+            pages: Math.ceil(users.total / page_limit),
+            total: users.total
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
+async function getAdmins(req, res) {
+
+    let {
+        query: {
+            page = 1,
+            page_limit = 10,
+            name = '',
+            sort_by = 'created_at',
+            sort_order = 'desc',
+            disabled = 'false'
+        }
+    } = req;
+
+    try {
+        const users = await usersRepository.getAdmins(page, page_limit, name, disabled, sort_by, sort_order);
+        
+        return res.status(200).send({
+            users,
+            page: parseInt(page),
+            pages: Math.ceil(users.total / page_limit),
+            total: users.total
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
 async function getTranslators(req, res) {
 
     let {
@@ -86,21 +145,23 @@ async function getTranslators(req, res) {
             speciality_id = '',
             languages = '',
             grade = '',
-            experience = '',
-            availability = '',
             min_price_minute = '',
             max_price_minute = '',
             min_experience = '',
             max_experience = '',
+            approved_translator = '1',
+            sort_by = 'created_at',
+            sort_order = 'desc',
+            disabled = 'false'
         }
     } = req;
 
     try {
-        let users = await usersRepository.getTranslators(name, speciality_id, languages);
+        let users = await usersRepository.getTranslators(name, speciality_id, languages, approved_translator, sort_by, sort_order, disabled);
         const repoLanguages = await languagesRepository.getAllLanguages();
         const specialities = await specialitiesRepository.getAllSpecialities()
+        const platforms = await platformsRepository.getAllPlatforms()
 
-        
         for (let i = 0; i < users.length; i++) {
 
             const element = users[i];
@@ -127,7 +188,7 @@ async function getTranslators(req, res) {
                 cached.forEach(speciality => {
                     let newSpeciality = (specialities.filter(spec => spec.id == speciality))
                     if(newSpeciality[0]){
-                        element.specialities.push(newSpeciality)
+                        element.specialities.push(...newSpeciality)
                     }
                 });
 
@@ -157,6 +218,18 @@ async function getTranslators(req, res) {
                 element.total_experience = total_exp
                 element.total_experience_years = Math.floor(total_exp/12)
                
+            }
+
+            if(element.remote_tools){
+                let cached = element.remote_tools;
+                element.remote_tools=[]
+                cached.forEach(platform => {
+                    let newPlatform = (platforms.filter(plat => plat.id == platform))
+                    if(newPlatform[0]){
+                        element.remote_tools.push(...newPlatform)
+                    }
+                });
+
             }
             
         }
@@ -201,48 +274,73 @@ async function getUser(req, res) {
 
         const repoLanguages = await languagesRepository.getAllLanguages();
         const specialities = await specialitiesRepository.getAllSpecialities()
+        const platforms = await platformsRepository.getAllPlatforms()
 
         if(user){
             delete user.password
-
             
-                if(user.languages){
-                    user.languages.forEach(language => {
-                        let newFrom = (repoLanguages.filter(lang => lang.id == language.from))
-                        let newTo = (repoLanguages.filter(lang => lang.id == language.to))
-    
-                        if(newFrom[0]){
-                            language.from=newFrom[0]
-                        }
-    
-                        if(newTo[0]){
-                            language.to=newTo[0]
-                        }
-                    });
-                }
-    
-                //console.log(specialities)
-                if(user.specialities){
-                    let cached = user.specialities;
-                    user.specialities=[]
-                    cached.forEach(speciality => {
-                        let newSpeciality = (specialities.filter(spec => spec.id == speciality))
-                        if(newSpeciality[0]){
-                            user.specialities.push(newSpeciality)
-                        }
-                    });
-    
-                } 
+            if(user.languages){
+                user.languages.forEach(language => {
+                    let newFrom = (repoLanguages.filter(lang => lang.id == language.from))
+                    let newTo = (repoLanguages.filter(lang => lang.id == language.to))
 
-                if(user.work_experience){
-                    let total_exp = 0
-                    user.work_experience.forEach(exp => {
-                        total_exp = total_exp + parseInt(exp.labor_months)
-                    });
-                    user.total_experience = total_exp
-                    user.total_experience_years = Math.floor(total_exp/12)
-                   
-                }
+                    if(newFrom[0]){
+                        language.from=newFrom[0]
+                    }
+
+                    if(newTo[0]){
+                        language.to=newTo[0]
+                    }
+                });
+            }
+
+            //console.log(specialities)
+            if(user.specialities){
+                let cached = user.specialities;
+                user.specialities=[]
+                cached.forEach(speciality => {
+                    let newSpeciality = (specialities.filter(spec => spec.id == speciality))
+                    if(newSpeciality[0]){
+                        user.specialities.push(...newSpeciality)
+                    }
+                });
+
+            } 
+
+            if(user.work_experience){
+                let total_exp = 0
+                user.work_experience.forEach(exp => {
+                    total_exp = total_exp + parseInt(exp.labor_months)
+                });
+                user.total_experience = total_exp
+                user.total_experience_years = Math.floor(total_exp/12)
+                
+            }
+
+            if(user.remote_tools){
+                let cached = user.remote_tools;
+                user.remote_tools=[]
+                cached.forEach(platform => {
+                    let newPlatform = (platforms.filter(plat => plat.id == platform))
+                    if(newPlatform[0]){
+                        user.remote_tools.push(...newPlatform)
+                    }
+                });
+
+            }
+
+            if(user.role == "2"){
+                const services = await servicesRepository.getServicesByTranslator(1, 10, user.id)
+                user.total_services = services.total
+                
+            }
+            if(user.role == "3" || user.role == "4"){
+                const services = await servicesRepository.getServicesByClient(1, 10, user.id)
+                user.total_services = services.total
+            }
+
+
+
 
             return res.status(200).send({
                 user
@@ -322,6 +420,69 @@ async function update(req, res) {
         return res.status(500).send({ message: error.message });
     }
 }
+
+
+async function adminUpdate(req, res) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty())
+            return res
+                .status(409)
+                .send({ errors: errors.formatWith(formatError).mapped() });
+        else {
+            const {
+                params: { id },
+                body
+            } = req;
+
+            if (body.password) {
+                body.password = bcrypt.hashSync(body.password, bcrypt.genSaltSync(10))
+            }
+
+            await usersRepository.update(
+                { ...body },
+                { id: id }
+            )
+
+            return res
+                .status(201)
+                .send({ message: 'Usuario actualizado exitosamente' });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
+
+
+async function approval(req, res) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty())
+            return res
+                .status(409)
+                .send({ errors: errors.formatWith(formatError).mapped() });
+        else {
+            const {
+                params: { id },
+                body: {approved_translator}
+            } = req;
+
+            await usersRepository.update(
+                { approved_translator: approved_translator },
+                { id: id }
+            )
+
+            getUser(req, res, id )
+
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
 
 
 async function remove(req, res) {
@@ -442,5 +603,9 @@ module.exports = {
     remove,
     setUnavailability,
     setAvailability,
-    uploadImage
+    uploadImage,
+    approval,
+    adminUpdate,
+    getAdmins,
+    getClients
 };

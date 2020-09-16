@@ -14,6 +14,8 @@ router.put('/start/:id', controller.start);
 router.put('/finish/:id', controller.finish);
 router.put('/reprogram/:id', controller.update);
 router.put('/:id', controller.update);
+router.put('/share/:id', controller.share);
+
 
 router.delete('/:id', controller.remove);
 router.post('/image', multer.array('files'), (req, res) => {

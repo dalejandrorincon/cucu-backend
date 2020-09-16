@@ -20,6 +20,8 @@ const fields = [
   'client_id',
   'translator_id',
   'platform_id',
+  'time_type',
+  'shared_with',
   'deleted',
 ];
 
@@ -57,7 +59,9 @@ class Repository extends Base {
         'translation_services.client_id',
         'translation_services.translator_id',
         'translation_services.start_date',
-        'translation_services.end_date'
+        'translation_services.end_date',
+        'translation_services.time_type',
+        'translation_services.shared_with',
 
       )
       .where("translation_services.deleted", false)
@@ -104,7 +108,9 @@ class Repository extends Base {
         'translation_services.client_id',
         'translation_services.translator_id',
         'translation_services.start_date',
-        'translation_services.end_date'
+        'translation_services.end_date',
+        'translation_services.time_type',
+        'translation_services.shared_with',
 
       )
       .where("translation_services.deleted", false)
@@ -176,6 +182,8 @@ class Repository extends Base {
         'translation_services.status',
         'translation_services.client_id',
         'translation_services.translator_id',
+        'translation_services.time_type',
+        'translation_services.shared_with',
       )
       .where("translation_services.deleted", false)
       .where("translation_services.translator_id", userId)
@@ -244,6 +252,8 @@ class Repository extends Base {
         'translation_services.status',
         'translation_services.client_id',
         'translation_services.translator_id',
+        'translation_services.time_type',
+        'translation_services.shared_with',
       )
       .where("translation_services.deleted", false)
       .where("translation_services.client_id", userId)

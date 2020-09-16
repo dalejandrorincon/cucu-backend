@@ -374,6 +374,34 @@ async function uploadFile(req, res) {
     }
 }
 
+async function share(req, res) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty())
+            return res
+                .status(409)
+                .send({ errors: errors.formatWith(formatError).mapped() });
+        else {
+            const {
+                params: { id },
+                body: { shared_with }
+            } = req;
+            
+            await servicesRepository.update(
+                { shared_with: shared_with },
+                { id: id }
+            )
+
+            return res
+                .status(201)
+                .send({ message: 'Servicio actualizado exitosamente' });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
 
 module.exports = {
     index,
@@ -387,5 +415,6 @@ module.exports = {
     start,
     finish,
     servicesByTranslator,
-    uploadFile
+    uploadFile,
+    share
 };

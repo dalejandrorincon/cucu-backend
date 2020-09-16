@@ -17,7 +17,8 @@ const fields = [
   'country_id',
   'city_id',
   'department_id',
-  'address',
+  'address_1',
+  'address_2',
   'nationality',
   'description',
   'languages',
@@ -26,7 +27,12 @@ const fields = [
   'work_experience',
   'image_url',
   'company_name',
-  'unavailable'
+  'unavailable',
+  'address_additional',
+  'approved_translator',
+  'remote_tools',
+  'admin_permissions',
+  'created_at'
 ];
 
 class Repository extends Base {
@@ -50,12 +56,11 @@ class Repository extends Base {
         'email',
         'role',
         'disabled',
-        'rate_minute',
-        'rate_hour',
         'country_id',
         'city_id',
         'department_id',
         'address_1',
+        'address_2',
         'nationality',
         'description',
         'languages',
@@ -102,7 +107,86 @@ class Repository extends Base {
       })
   }
 
-  getTranslators(name, speciality_id, languages) {
+  getClients(page, page_limit, name, disabled, sort_by, sort_order) {
+    return this.model
+      .query()
+      .select(
+        'id',
+        'firstname',
+        'lastname',
+        'document',
+        'phone',
+        'email',
+        'role',
+        'disabled',
+        'country_id',
+        'city_id',
+        'department_id',
+        'address_1',
+        'address_2',
+        'address_additional',
+        'nationality',
+        'description',
+        'image_url',
+        'company_name'
+      )
+      .where("deleted", false)
+      .where("disabled", disabled)
+      .page(page-1, page_limit)
+      .orderBy(sort_by, sort_order)
+
+      .andWhere(function () {
+          this.orWhere("role", 3);
+          this.orWhere("role", 4);
+      })  
+
+      .andWhere(function () {
+        if (name) {
+          this.orWhere(raw('lower(unaccent(users."firstname"))'), 'like', `%${name}%`);
+          this.orWhere(raw('lower(unaccent(users."lastname"))'), 'like', `%${name}%`);
+        }
+      })
+  }
+
+  getAdmins(page, page_limit, name, disabled, sort_by, sort_order) {
+    return this.model
+      .query()
+      .select(
+        'id',
+        'firstname',
+        'lastname',
+        'document',
+        'phone',
+        'email',
+        'role',
+        'disabled',
+        'country_id',
+        'city_id',
+        'department_id',
+        'address_1',
+        'address_2',
+        'address_additional',
+        'nationality',
+        'description',
+        'image_url',
+        'admin_permissions',
+      )
+      .where("deleted", false)
+      .where("disabled", disabled)
+      .where("role", "1")
+      .page(page-1, page_limit)
+      .orderBy(sort_by, sort_order)
+
+      .andWhere(function () {
+        if (name) {
+          this.orWhere(raw('lower(unaccent(users."firstname"))'), 'like', `%${name}%`);
+          this.orWhere(raw('lower(unaccent(users."lastname"))'), 'like', `%${name}%`);
+        }
+      })
+  }
+
+
+  getTranslators(name, speciality_id, languages, approved_translator, sort_by, sort_order, disabled) {
     return this.model
       .query()
       .select(
@@ -120,6 +204,7 @@ class Repository extends Base {
         'city_id',
         'department_id',
         'address_1',
+        'address_2',
         'nationality',
         'description',
         'languages',
@@ -127,10 +212,19 @@ class Repository extends Base {
         'specialities',
         'work_experience',
         'image_url',
-        'unavailable'
+        'unavailable',
+        'address_additional',
+        'approved_translator',
+        'remote_tools',
+        'created_at'
       )
+      .where("disabled", disabled)
       .where("deleted", false)
       .where("role", "2")
+      .where("approved_translator", approved_translator )
+
+      .orderBy(sort_by, sort_order)
+
       .andWhere(function () {
         if(speciality_id){
           let parsed = JSON.parse(speciality_id)
@@ -145,7 +239,7 @@ class Repository extends Base {
         }
       })
 
-      .orderBy('created_at')
+      
       .andWhere(function () {
         if (name) {
           this.orWhere(raw('lower(unaccent(users."firstname"))'), 'like', `%${name}%`);
@@ -159,6 +253,8 @@ class Repository extends Base {
           this.whereJsonSupersetOf('languages', parsed)
         }
       })
+
+
   }
 
   getUser(userId) {
@@ -178,16 +274,22 @@ class Repository extends Base {
         'country_id',
         'city_id',
         'department_id',
-        'address',
+        'address_1',
+        'address_2',
         'nationality',
         'description',
         'languages',
-        'specialties',
+        'specialities',
         'work_experience',
         'unavailable',
         'image_url',
         'company_name',
-        'disabled'
+        'disabled',
+        'unavailable',
+        'address_additional',
+        'approved_translator',
+        'remote_tools',
+        'admin_permissions'
       )
       .where("deleted", false)
       .orderBy('created_at')
