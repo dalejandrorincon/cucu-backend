@@ -22,6 +22,7 @@ router.post('/', validators('store'), controller.store);
 router.post('/set-unavailability', controller.setUnavailability);
 router.post('/set-availability', controller.setAvailability);
 router.put('/', isAuthenticated, validators('update'), controller.update);
+router.put('/password', isAuthenticated, validators('password'), controller.updatePassword);
 router.put('/:id', isAuthenticated, isRole, validators('update'), controller.adminUpdate);
 router.put('/approval/:id', isAuthenticated, isRole, controller.approval);
 

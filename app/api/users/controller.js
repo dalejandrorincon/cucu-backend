@@ -513,6 +513,49 @@ async function update(req, res) {
     }
 }
 
+async function updatePassword(req, res) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty())
+            return res
+                .status(409)
+                .send({ errors: errors.formatWith(formatError).mapped() });
+        else {
+            const {
+                headers: { authorization },
+                body: { oldPassword, newPassword }
+            } = req;
+
+            const userId = await decodeToken(authorization.replace("Bearer ", ""));
+
+            const user = await usersRepository.findOne({ id: userId });
+
+            const isEqual = await bcrypt.compare(oldPassword, user.password);
+
+            if(isEqual){
+
+                let newPasswordCrypt = bcrypt.hashSync(newPassword, bcrypt.genSaltSync(10))
+
+                await usersRepository.update(
+                    { password: newPasswordCrypt },
+                    { id: userId }
+                )
+
+                return res
+                    .status(201)
+                    .send({ message: 'Usuario actualizado exitosamente' });
+            }else{
+                return res.status(400).send({ message: "Contraseña errónea" });
+            }
+            
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
+
 
 async function adminUpdate(req, res) {
     try {
@@ -699,5 +742,6 @@ module.exports = {
     approval,
     adminUpdate,
     getAdmins,
-    getClients
+    getClients,
+    updatePassword
 };
