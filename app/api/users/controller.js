@@ -4,16 +4,15 @@ const specialitiesRepository = require('../specialities/repository');
 const reviewsRepository = require('../reviews/repository');
 const platformsRepository = require('../platforms/repository');
 const servicesRepository = require('../translation_services/repository');
-
+const unavailabilitiesRepository = require('../unavailabilities/repository');
 
 const { formatError } = require('../../utils/helpers');
-
-const bcrypt = require('bcryptjs');
 const { decodeToken } = require('../../utils/helpers');
-
-const { validationResult } = require('express-validator');
 const { imageUpload } = require('../../utils/file')
 
+const { validationResult } = require('express-validator');
+const bcrypt = require('bcryptjs');
+const moment = require('moment');
 
 async function index(req, res) {
 
@@ -151,6 +150,8 @@ async function getTranslators(req, res) {
             max_price_hour = '',
             min_experience = '',
             max_experience = '',
+            min_available_time = '',
+            max_available_time = '',
             approved_translator = '1',
             sort_by = 'created_at',
             sort_order = 'desc',
@@ -233,6 +234,50 @@ async function getTranslators(req, res) {
                 });
 
             }
+
+            if(element.unavailable==false || ( min_available_time!='' && max_available_time!='' ) ){
+
+                let unavailabilities = await  unavailabilitiesRepository.getUserUnavailabilities(element.id)
+                let current_date =  moment().format()
+                let found = 0;
+                let foundFilter = 0
+
+                unavailabilities.forEach(unav => {
+                    if(
+                        moment(current_date).isAfter(unav.from) &&
+                        moment(current_date).isBefore(unav.to)
+                    ){
+                        found++
+                    }
+
+                    if(min_available_time!='' && max_available_time){
+                        if(
+                            (moment(unav.from).isAfter(min_available_time) &&
+                            moment(unav.to).isBefore(max_available_time))
+                            ||
+                            (moment(unav.from).isBefore(min_available_time) &&
+                            moment(unav.to).isAfter(min_available_time))
+                            ||
+                            (moment(unav.from).isBefore(max_available_time) &&
+                            moment(unav.to).isAfter(max_available_time))
+                        ){
+                            foundFilter++
+                        }
+                    }
+
+
+                });
+
+                if(found>0){
+                    element.unavailable=true
+                }
+
+                if(min_available_time!='' && max_available_time!=''){
+                    if(foundFilter>0){
+                        element.toRemoveFromAvailables = true;
+                    }                
+                }
+            }
             
         }
 
@@ -250,6 +295,11 @@ async function getTranslators(req, res) {
 
         if(min_experience!='' && max_experience!=''){
             users = users.filter(item => item.total_experience_years >= min_experience && item.total_experience_years <= max_experience)
+        }
+
+        
+        if(min_available_time!='' && max_available_time){
+            users = users.filter(item => item.toRemoveFromAvailables != true);
         }
 
         let total = users.length
@@ -353,6 +403,26 @@ async function getUser(req, res) {
                     });
                     avg = total/reviews.length
                     user.rating = avg.toFixed(2)
+                }
+
+                if(user.unavailable==false  ){
+
+                    let unavailabilities = await  unavailabilitiesRepository.getUserUnavailabilities(user.id)
+                    let current_date =  moment().format()
+                    let found = 0;
+    
+                    unavailabilities.forEach(unav => {
+                        if(
+                            moment(current_date).isAfter(unav.from) &&
+                            moment(current_date).isBefore(unav.to)
+                        ){
+                            found++
+                        }       
+                    });
+    
+                    if(found>0){
+                        user.unavailable=true
+                    }
                 }
                 
             }

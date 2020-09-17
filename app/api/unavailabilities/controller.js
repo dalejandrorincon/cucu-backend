@@ -69,6 +69,26 @@ async function transactionsByUser(req, res) {
     }
 }
 
+async function transactionsByUser(req, res) {
+
+    const {
+        params: { id }
+    } = req;
+
+  
+    try {
+
+        let unavailabilities = await unavailabilityRepository.getUserUnavailabilities(id);
+
+        return res.status(200).send({
+            unavailabilities
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
 
 async function getAll(req, res) {
     try {

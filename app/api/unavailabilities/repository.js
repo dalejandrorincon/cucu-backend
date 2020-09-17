@@ -24,13 +24,12 @@ class Repository extends Base {
       .where("deleted", false);
   }
 
-  getUserUnavailabilities(page, page_limit, userId){
+  getUserUnavailabilities(userId){
     return this.model
       .query()
       .where("deleted", false)
       .where("translator_id", userId)
       .orderBy('created_at')
-      .page(page-1, page_limit)
   }
 
   getUnavailabilities(page, page_limit) {

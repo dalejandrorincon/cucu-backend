@@ -4,7 +4,7 @@ const controller = require('./controller');
 
 router.get('/', controller.index);
 router.get('/all', controller.getAll);
-router.get('/user', controller.transactionsByUser);
+router.get('/user/:id', controller.transactionsByUser);
 router.post('/', controller.store);
 router.put('/:id', controller.update);
 router.delete('/:id', controller.remove);
