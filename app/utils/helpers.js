@@ -9,7 +9,8 @@ const {
   MAIL_USER,
   MAIL_PASSWORD,
   MAIL_SECURE,
-  APP_NAME
+  APP_NAME,
+  APP_EMAIL
 } = process.env;
 
 const createToken = (userId, time = 2, format = 'hours') => {
@@ -168,7 +169,7 @@ const sendMail = data => {
   const transporter = getEmailTransporter();
   const { subject, html, to, text } = data;
   const options = {
-    from: `${APP_NAME} <${MAIL_USER}>`, // sender address
+    from: `${APP_NAME} <${APP_EMAIL}>`, // sender address
     to, // list of receivers
     subject, // Subject line
     text: text ? text : APP_NAME,
