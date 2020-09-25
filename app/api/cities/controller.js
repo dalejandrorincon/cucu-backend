@@ -8,12 +8,13 @@ async function index(req, res) {
         query: {
             page = 1,
             page_limit = 10,
-            name = ''
+            name = '',
+            country_id = ''
         }
     } = req;
 
     try {
-        const cities = await cityRepository.getCities(page, page_limit, name);
+        const cities = await cityRepository.getCities(page, page_limit, name, country_id);
         return res.status(200).send({
             ...cities,
             page: parseInt(page),
