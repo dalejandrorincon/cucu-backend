@@ -496,7 +496,11 @@ async function update(req, res) {
 
             if (body.password) {
                 body.password = bcrypt.hashSync(body.password, bcrypt.genSaltSync(10))
+            }else{
+                delete body.password
             }
+            
+            delete body.email
 
             await usersRepository.update(
                 { ...body },
@@ -645,6 +649,35 @@ async function remove(req, res) {
 }
 
 
+async function disable(req, res) {
+    try {
+        const { authorization } = req.headers;
+
+        if (!authorization) {
+            return res.status(401).send({
+                message: 'Olvidó autenticarse'
+            });
+        }
+
+        const token = authorization.replace("Bearer ", "")
+        const userId = await decodeToken(token);
+        
+        await usersRepository.update(
+            { disabled: true },
+            { id: userId }
+        )
+
+        return res
+            .status(201)
+            .send({ message: 'Usuario deshabilitado exitosamente' });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
+
 async function setUnavailability(req, res) {
 
     const { authorization } = req.headers;
@@ -743,5 +776,6 @@ module.exports = {
     adminUpdate,
     getAdmins,
     getClients,
-    updatePassword
+    updatePassword,
+    disable
 };

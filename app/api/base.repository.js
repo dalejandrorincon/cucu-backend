@@ -1,7 +1,7 @@
 const cleanFields = (data = {}, fields) => {
   if (!fields.length) return data;
   let model = {};
-  for (const i of fields) if (data[i]!=null || typeof data[i]==="boolean") model[i] = data[i];
+  for (const i of fields) if (data[i]!=null || data[i]!=undefined || typeof data[i]==="boolean") model[i] = data[i];
   return model;
 };
 
