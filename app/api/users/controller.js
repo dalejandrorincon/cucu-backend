@@ -213,14 +213,8 @@ async function getTranslators(req, res) {
                 element.rating = avg.toFixed(2)
             }
 
-            if(element.work_experience){
-                let total_exp = 0
-                element.work_experience.forEach(exp => {
-                    total_exp = total_exp + parseInt(exp.labor_months)
-                });
-                element.total_experience = total_exp
-                element.total_experience_years = Math.floor(total_exp/12)
-               
+            if(element.labor_months){
+                element.total_experience_years = Math.floor(element.labor_months/12)                
             }
 
             if(element.remote_tools){
@@ -293,7 +287,7 @@ async function getTranslators(req, res) {
             users = users.filter(item => parseInt(item.rate_hour) >= parseInt(min_price_hour) && parseInt(item.rate_hour) <= parseInt(max_price_hour))
         }
 
-        if(min_experience!='' && max_experience!=''){
+        if(min_experience!='' && min_experience!="0" && max_experience!=''){
             users = users.filter(item => item.total_experience_years >= min_experience && item.total_experience_years <= max_experience)
         }
 
@@ -363,14 +357,8 @@ async function getUser(req, res) {
 
             } 
 
-            if(user.work_experience){
-                let total_exp = 0
-                user.work_experience.forEach(exp => {
-                    total_exp = total_exp + parseInt(exp.labor_months)
-                });
-                user.total_experience = total_exp
-                user.total_experience_years = Math.floor(total_exp/12)
-                
+            if(user.labor_months){
+                user.total_experience_years = Math.floor(user.labor_months/12)                
             }
 
             if(user.remote_tools){

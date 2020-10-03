@@ -5,7 +5,6 @@ exports.up = function (knex) {
     t
         .integer('country_id')
         .unsigned()
-        .notNull()
         .references('id')
         .inTable(TABLES.countries)
         .onUpdate('CASCADE');

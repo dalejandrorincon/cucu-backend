@@ -32,7 +32,8 @@ const fields = [
   'approved_translator',
   'remote_tools',
   'admin_permissions',
-  'created_at'
+  'created_at',
+  'labor_months'
 ];
 
 class Repository extends Base {
@@ -69,7 +70,10 @@ class Repository extends Base {
         'work_experience',
         'image_url',
         'company_name',
-        'unavailable'
+        'unavailable',
+        'labor_months',
+        'rate_minute',
+        'rate_hour',
       )
       .where("deleted", false)
       .orderBy('created_at')
@@ -216,6 +220,7 @@ class Repository extends Base {
         'address_additional',
         'approved_translator',
         'remote_tools',
+        'labor_months',
         'created_at'
       )
       .where("disabled", disabled)
