@@ -55,6 +55,7 @@ async function servicesByTranslator(req, res) {
             max_date = '',
             sort_by = 'created_at',
             sort_order = 'desc',
+            duration_type = ""
         }
     } = req;
 
@@ -72,7 +73,7 @@ async function servicesByTranslator(req, res) {
     if (!user) return res.status(403).send({ message: 'Olvidó autenticarse' });
 
     try {
-        const services = await servicesRepository.getServicesByTranslator(page, page_limit, user.id, name, status, service_site, service_type, client_id, amount, min_date, max_date, sort_by, sort_order);
+        const services = await servicesRepository.getServicesByTranslator(page, page_limit, user.id, name, status, service_site, service_type, client_id, amount, min_date, max_date, sort_by, sort_order, duration_type);
         return res.status(200).send({
             ...services,
             page: parseInt(page),
@@ -101,6 +102,7 @@ async function servicesByClient(req, res) {
             max_date = '',
             sort_by = 'created_at',
             sort_order = 'desc',
+            duration_type = ""
         }
     } = req;
 
@@ -118,7 +120,7 @@ async function servicesByClient(req, res) {
     if (!user) return res.status(403).send({ message: 'Olvidó autenticarse' });
 
     try {
-        const services = await servicesRepository.getServicesByClient(page, page_limit, user.id, name, status, service_site, service_type, translator_id, amount, min_date, max_date, sort_by, sort_order);
+        const services = await servicesRepository.getServicesByClient(page, page_limit, user.id, name, status, service_site, service_type, translator_id, amount, min_date, max_date, sort_by, sort_order, duration_type);
         return res.status(200).send({
             ...services,
             page: parseInt(page),
@@ -172,11 +174,22 @@ async function store(req, res) {
                 .send({ errors: errors.formatWith(formatError).mapped() });
         else {
             const { body } = req;
-            console.log(req.body)
-            //console.log(body)
+            
+            let total=0;
+            const user = await usersRepository.findById(body.translator_id);
+            switch (body.duration_type) {
+                case 0:
+                    total = parseInt(user.rate_hour) * parseInt(body.duration_amount)
+                    break;
+            
+                case 1:
+                    total = parseInt(user.rate_minute) * parseInt(body.duration_amount)
+                    break;
+            }
 
             await servicesRepository.create({
-                ...body
+                ...body,
+                amount: total
             });
 
             return res
@@ -247,6 +260,7 @@ async function cancel(req, res) {
     try {
         const {
             params: { id },
+            body: { cancel_reason }
         } = req;
 
         const service = await servicesRepository.findOne({
@@ -260,7 +274,7 @@ async function cancel(req, res) {
         }
 
         await servicesRepository.update(
-            { status: "4" },
+            { status: "5", cancel_reason: cancel_reason },
             { id: id }
         )
 
@@ -297,7 +311,7 @@ async function reprogram(req, res) {
         }
 
         await servicesRepository.update(
-            { status: "3", date: date },
+            { status: "4", date: date },
             { id: id }
         )
 
@@ -312,6 +326,75 @@ async function reprogram(req, res) {
         return res.status(500).send({ message: error.message });
     }
 }
+
+
+async function accept(req, res) {
+    try {   
+        const {
+            params: { id }
+        } = req;
+
+        const service = await servicesRepository.findOne({
+            id
+        });
+        if (!service) {
+            return res.status(400).send({
+                message:
+                    'No existe este servicio.'
+            });
+        }
+
+        await servicesRepository.update(
+            { status: "1" },
+            { id: id }
+        )
+
+        return res
+            .status(201)
+            .send(
+                await servicesRepository.findOne({id})
+            );
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
+async function reject(req, res) {
+    try {   
+        const {
+            params: { id },
+            body: { cancel_reason }
+        } = req;
+
+        const service = await servicesRepository.findOne({
+            id
+        });
+        if (!service) {
+            return res.status(400).send({
+                message:
+                    'No existe este servicio.'
+            });
+        }
+
+        await servicesRepository.update(
+            { status: "6", cancel_reason: cancel_reason },
+            { id: id }
+        )
+
+        return res
+            .status(201)
+            .send(
+                await servicesRepository.findOne({id})
+            );
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
 
 async function start(req, res) {
     try {
@@ -330,7 +413,7 @@ async function start(req, res) {
         }
 
         await servicesRepository.update(
-            { status: "1", start_date: moment().format() },
+            { status: "2", start_date: moment().format() },
             { id: id }
         )
 
@@ -363,7 +446,7 @@ async function finish(req, res) {
         }
 
         await servicesRepository.update(
-            { status: "2", end_date: moment().format() },
+            { status: "3", end_date: moment().format() },
             { id: id }
         )
 
@@ -429,6 +512,8 @@ module.exports = {
     reprogram,
     start,
     finish,
+    accept,
+    reject,
     servicesByTranslator,
     servicesByClient,
     uploadFile,

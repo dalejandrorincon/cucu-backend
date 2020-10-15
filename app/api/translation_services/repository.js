@@ -1,5 +1,6 @@
 const Base = require('../base.repository');
 const Service = require('./entity');
+const { raw } = require('objection');
 
 const fields = [
   'id',
@@ -22,7 +23,9 @@ const fields = [
   'platform_id',
   'time_type',
   'shared_with',
-  'deleted',
+  'cancel_reason',
+  'paid_status',
+  'deleted'
 ];
 
 class Repository extends Base {
@@ -62,6 +65,8 @@ class Repository extends Base {
         'translation_services.end_date',
         'translation_services.time_type',
         'translation_services.shared_with',
+        'translation_services.cancel_reason',
+        'translation_services.paid_status'
 
       )
       .where("translation_services.deleted", false)
@@ -71,12 +76,15 @@ class Repository extends Base {
       .innerJoin('users as translator', 'translator.id', 'translation_services.translator_id')
 
       .withGraphFetched('client(selectNamesAndId)')
-      .withGraphFetched('translator(selectNamesAndId)')
+      .withGraphFetched('translator(selectNamesAndRate)')
       .withGraphFetched('platform')
 
       .modifiers({
         selectNamesAndId(builder) {
           builder.select('firstname', 'lastname', 'id');
+        },
+        selectNamesAndRate(builder) {
+          builder.select('firstname', 'lastname', 'id', 'rate_minute','rate_hour');
         }
       })
   }
@@ -117,6 +125,8 @@ class Repository extends Base {
         'translation_services.end_date',
         'translation_services.time_type',
         'translation_services.shared_with',
+        'translation_services.cancel_reason',
+        'translation_services.paid_status'
 
       )
       .where("translation_services.deleted", false)
@@ -125,12 +135,15 @@ class Repository extends Base {
       .innerJoin('users as translator', 'translator.id', 'translation_services.translator_id')
 
       .withGraphFetched('client(selectNamesAndId)')
-      .withGraphFetched('translator(selectNamesAndId)')
+      .withGraphFetched('translator(selectNamesAndRate)')
       .withGraphFetched('platform')
 
       .modifiers({
         selectNamesAndId(builder) {
           builder.select('firstname', 'lastname', 'id');
+        },
+        selectNamesAndRate(builder) {
+          builder.select('firstname', 'lastname', 'id', 'rate_minute','rate_hour');
         }
       })
 
@@ -185,7 +198,7 @@ class Repository extends Base {
       .page(page-1, page_limit)
   }
 
-  getServicesByTranslator(page, page_limit, userId, name, status, service_site, service_type, client_id, amount, min_date, max_date, sort_by, sort_order) {
+  getServicesByTranslator(page, page_limit, userId, name, status, service_site, service_type, client_id, amount, min_date, max_date, sort_by, sort_order, duration_type) {
     if(!sort_by){
       sort_by = "created_at"
     }
@@ -213,6 +226,8 @@ class Repository extends Base {
         'translation_services.translator_id',
         'translation_services.time_type',
         'translation_services.shared_with',
+        'translation_services.cancel_reason',
+        'translation_services.paid_status'
       )
       .where("translation_services.deleted", false)
       .where("translation_services.translator_id", userId)
@@ -222,21 +237,32 @@ class Repository extends Base {
       .innerJoin('platforms as platform', 'platform.id', 'translation_services.platform_id')      
 
       .withGraphFetched('client(selectNamesAndId)')
-      .withGraphFetched('translator(selectNamesAndId)')
+      .withGraphFetched('translator(selectNamesAndRate)')
       .withGraphFetched('platform')
 
       .modifiers({
         selectNamesAndId(builder) {
           builder.select('firstname', 'lastname', 'id');
+        },
+        selectNamesAndRate(builder) {
+          builder.select('firstname', 'lastname', 'id', 'rate_minute','rate_hour');
         }
       })
 
 
-      /* .andWhere(function () {
+      .andWhere(function () {
         if (name) {
-          this.orWhere(raw('lower(unaccent("name"))'), 'like', `%${name}%`);
+          this.orWhere(raw('lower(unaccent(client."firstname"))'), 'like', `%${name}%`);
+          this.orWhere(raw('lower(unaccent(client."lastname"))'), 'like', `%${name}%`);
         }
-      }) */
+      })
+
+      .andWhere(function () {
+        if (duration_type) {
+          this.orWhere("translation_services.duration_type", duration_type);
+        }
+      })
+
       .andWhere(function () {
         if (status) {
           this.orWhere("translation_services.status", status);
@@ -279,7 +305,7 @@ class Repository extends Base {
       .page(page-1, page_limit)
   }
 
-  getServicesByClient(page, page_limit, userId, name, status, service_site, service_type, translator_id, amount, min_date, max_date, sort_by, sort_order) {
+  getServicesByClient(page, page_limit, userId, name, status, service_site, service_type, translator_id, amount, min_date, max_date, sort_by, sort_order, duration_type) {
     if(!sort_by){
       sort_by = "created_at"
     }
@@ -307,6 +333,8 @@ class Repository extends Base {
         'translation_services.translator_id',
         'translation_services.time_type',
         'translation_services.shared_with',
+        'translation_services.cancel_reason',
+        'translation_services.paid_status'
       )
       .where("translation_services.deleted", false)
       .where("translation_services.client_id", userId)
@@ -315,19 +343,30 @@ class Repository extends Base {
       .innerJoin('users as translator', 'translator.id', 'translation_services.translator_id')
       .withGraphFetched('platform')
       .withGraphFetched('client(selectNamesAndId)')
-      .withGraphFetched('translator(selectNamesAndId)')
+      .withGraphFetched('translator(selectNamesAndRate)')
       .modifiers({
         selectNamesAndId(builder) {
           builder.select('firstname', 'lastname', 'id');
+        },
+        selectNamesAndRate(builder) {
+          builder.select('firstname', 'lastname', 'id', 'rate_minute','rate_hour');
         }
       })
 
 
-      /* .andWhere(function () {
+      .andWhere(function () {
         if (name) {
-          this.orWhere(raw('lower(unaccent("name"))'), 'like', `%${name}%`);
+          this.orWhere(raw('lower(unaccent(translator."firstname"))'), 'like', `%${name}%`);
+          this.orWhere(raw('lower(unaccent(translator."lastname"))'), 'like', `%${name}%`);
         }
-      }) */
+      })
+
+      .andWhere(function () {
+        if (duration_type) {
+          this.orWhere("translation_services.duration_type", duration_type);
+        }
+      })
+
       .andWhere(function () {
         if (status) {
           this.orWhere("translation_services.status", status);

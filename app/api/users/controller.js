@@ -231,7 +231,7 @@ async function getTranslators(req, res) {
 
             if(element.unavailable==false || ( min_available_time!='' && max_available_time!='' ) ){
 
-                let unavailabilities = await  unavailabilitiesRepository.getUserUnavailabilities(element.id)
+                let unavailabilities = await  unavailabilitiesRepository.getAllUserUnavailabilities(element.id)
                 let current_date =  moment().format()
                 let found = 0;
                 let foundFilter = 0
@@ -393,9 +393,9 @@ async function getUser(req, res) {
                     user.rating = avg.toFixed(2)
                 }
 
-                if(user.unavailable==false  ){
+                if(user.unavailable==false){
 
-                    let unavailabilities = await  unavailabilitiesRepository.getUserUnavailabilities(user.id)
+                    let unavailabilities = await  unavailabilitiesRepository.getAllUserUnavailabilities(user.id)
                     let current_date =  moment().format()
                     let found = 0;
     

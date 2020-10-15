@@ -13,6 +13,8 @@ router.get('/:id', controller.getService);
 router.post('/', controller.store);
 router.put('/cancel/:id', controller.cancel);
 router.put('/start/:id', controller.start);
+router.put('/accept/:id', controller.accept);
+router.put('/reject/:id', controller.reject);
 router.put('/finish/:id', controller.finish);
 router.put('/reprogram/:id', controller.update);
 router.put('/:id', controller.update);

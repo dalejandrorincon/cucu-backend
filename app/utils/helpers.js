@@ -13,7 +13,7 @@ const {
   APP_EMAIL
 } = process.env;
 
-const createToken = (userId, time = 48, format = 'hours') => {
+const createToken = (userId, time = 7, format = 'days') => {
   const payload = {
     sub: userId,
     iat: moment().unix(),

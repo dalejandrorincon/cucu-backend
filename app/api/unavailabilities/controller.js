@@ -27,12 +27,16 @@ async function index(req, res) {
     }
 }
 
-async function transactionsByUser(req, res) {
+async function unavailabilitiesByUser(req, res) {
 
     let {
         query: {
             page = 1,
-            page_limit = 10
+            page_limit = 10,
+            max_date = "",
+            min_date = "",
+            sort_by = 'created_at',
+            sort_order = 'desc',
         }
     } = req;
 
@@ -55,7 +59,7 @@ async function transactionsByUser(req, res) {
             return res.status(500).send({ message: "No es posible solicitar disponibles en este rol." });
         }
 
-        let unavailabilities = await unavailabilityRepository.getUserUnavailabilities(page, page_limit, userId);
+        let unavailabilities = await unavailabilityRepository.getUserUnavailabilities(page, page_limit, userId, min_date, max_date, sort_by, sort_order);
 
         return res.status(200).send({
             ...unavailabilities,
@@ -69,7 +73,7 @@ async function transactionsByUser(req, res) {
     }
 }
 
-async function transactionsByUser(req, res) {
+/* async function transactionsByUser(req, res) {
 
     const {
         params: { id }
@@ -87,7 +91,7 @@ async function transactionsByUser(req, res) {
         console.error(error);
         return res.status(500).send({ message: error.message });
     }
-}
+} */
 
 
 async function getAll(req, res) {
@@ -195,5 +199,5 @@ module.exports = {
     update,
     remove,
     getAll,
-    transactionsByUser
+    unavailabilitiesByUser
 };
