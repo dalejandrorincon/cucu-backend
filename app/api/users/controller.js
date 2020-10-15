@@ -14,6 +14,10 @@ const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const moment = require('moment');
 
+const {
+    createCustomer
+} = require('../../utils/payments');
+
 async function index(req, res) {
 
     let {
@@ -450,6 +454,12 @@ async function store(req, res) {
 
             console.log(req.body)
             //console.log(body)
+
+            if(body.role=="3" || body.role=="4"){
+                const customerPayment = await createCustomer(body)
+                console.log(customerPayment)
+                body.stripe_id = customerPayment.id
+            }
 
             await usersRepository.create({
                 ...body,

@@ -33,7 +33,8 @@ const fields = [
   'remote_tools',
   'admin_permissions',
   'created_at',
-  'labor_months'
+  'labor_months',
+  'stripe_id'
 ];
 
 class Repository extends Base {
@@ -294,7 +295,8 @@ class Repository extends Base {
         'address_additional',
         'approved_translator',
         'remote_tools',
-        'admin_permissions'
+        'admin_permissions',
+        'stripe_id'
       )
       .where("deleted", false)
       .orderBy('created_at', 'desc')

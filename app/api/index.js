@@ -14,6 +14,8 @@ const payments = require('./payments');
 const transactions = require('./transactions');
 const unavailabilities = require('./unavailabilities');
 const platforms = require('./platforms');
+const stripe = require('./stripe');
+
 
 routes.use('/users', users);
 routes.use('/auth', auth);
@@ -28,5 +30,7 @@ routes.use('/payments', payments);
 routes.use('/transactions', transactions);
 routes.use('/unavailabilities', unavailabilities);
 routes.use('/platforms', platforms);
+routes.use('/stripe', stripe);
+
 
 module.exports = routes;
