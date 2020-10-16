@@ -178,11 +178,11 @@ async function store(req, res) {
             let total=0;
             const user = await usersRepository.findById(body.translator_id);
             switch (body.duration_type) {
-                case 0:
+                case "0":
                     total = parseInt(user.rate_hour) * parseInt(body.duration_amount)
                     break;
             
-                case 1:
+                case "1":
                     total = parseInt(user.rate_minute) * parseInt(body.duration_amount)
                     break;
             }

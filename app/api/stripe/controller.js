@@ -114,12 +114,12 @@ async function confirmPayment(req, res) {
             return res.status(400).send({ message: "Stripe ID not found" });
         }
 
-        const service = await servicesRepository.findOne({ id: userId });
+        const service = await servicesRepository.findOne({ id: service_id });
         
         const intent = await stripe.paymentIntents.create({
-            amount: service.amount,
+            amount: service.amount*100,
             currency: 'usd',
-            customer: customer.id,
+            customer: stripe_id,
         });
 
         return res.status(200).send({
@@ -136,5 +136,6 @@ async function confirmPayment(req, res) {
 module.exports = {
     cardWalletIntent,
     getWalletCards,
-    deleteCard
+    deleteCard,
+    confirmPayment
 };
