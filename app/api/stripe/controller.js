@@ -115,6 +115,10 @@ async function confirmPayment(req, res) {
         }
 
         const service = await servicesRepository.findOne({ id: service_id });
+
+        if(service.status!="1"){
+            return res.status(400).send({ message: "Service not in payable status" });
+        }
         
         const intent = await stripe.paymentIntents.create({
             amount: service.amount*100,

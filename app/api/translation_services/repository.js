@@ -81,10 +81,10 @@ class Repository extends Base {
 
       .modifiers({
         selectNamesAndId(builder) {
-          builder.select('firstname', 'lastname', 'id');
+          builder.select('firstname', 'lastname', 'id', 'image_url');
         },
         selectNamesAndRate(builder) {
-          builder.select('firstname', 'lastname', 'id', 'rate_minute','rate_hour');
+          builder.select('firstname', 'lastname', 'id', 'rate_minute','rate_hour', 'image_url');
         }
       })
   }
@@ -140,10 +140,10 @@ class Repository extends Base {
 
       .modifiers({
         selectNamesAndId(builder) {
-          builder.select('firstname', 'lastname', 'id');
+          builder.select('firstname', 'lastname', 'id', 'image_url');
         },
         selectNamesAndRate(builder) {
-          builder.select('firstname', 'lastname', 'id', 'rate_minute','rate_hour');
+          builder.select('firstname', 'lastname', 'id', 'rate_minute','rate_hour', 'image_url');
         }
       })
 
@@ -242,10 +242,10 @@ class Repository extends Base {
 
       .modifiers({
         selectNamesAndId(builder) {
-          builder.select('firstname', 'lastname', 'id');
+          builder.select('firstname', 'lastname', 'id', 'image_url');
         },
         selectNamesAndRate(builder) {
-          builder.select('firstname', 'lastname', 'id', 'rate_minute','rate_hour');
+          builder.select('firstname', 'lastname', 'id', 'rate_minute','rate_hour', 'image_url');
         }
       })
 
@@ -346,10 +346,10 @@ class Repository extends Base {
       .withGraphFetched('translator(selectNamesAndRate)')
       .modifiers({
         selectNamesAndId(builder) {
-          builder.select('firstname', 'lastname', 'id');
+          builder.select('firstname', 'lastname', 'id', 'image_url');
         },
         selectNamesAndRate(builder) {
-          builder.select('firstname', 'lastname', 'id', 'rate_minute','rate_hour');
+          builder.select('firstname', 'lastname', 'id', 'rate_minute','rate_hour', 'image_url');
         }
       })
 

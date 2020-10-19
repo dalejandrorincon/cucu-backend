@@ -12,7 +12,8 @@ router.get('/:id', controller.getService);
 
 router.post('/', controller.store);
 router.put('/cancel/:id', controller.cancel);
-router.put('/start/:id', controller.start);
+//router.put('/start/:id', controller.start);
+router.put('/pay/:id', controller.pay);
 router.put('/accept/:id', controller.accept);
 router.put('/reject/:id', controller.reject);
 router.put('/finish/:id', controller.finish);

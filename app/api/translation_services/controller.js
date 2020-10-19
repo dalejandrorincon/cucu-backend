@@ -429,6 +429,41 @@ async function start(req, res) {
     }
 }
 
+
+async function pay(req, res) {
+    try {
+        const {
+            params: { id }
+        } = req;
+
+        const service = await servicesRepository.findOne({
+            id
+        });
+        if (!service) {
+            return res.status(400).send({
+                message:
+                    'No existe este servicio.'
+            });
+        }
+
+        await servicesRepository.update(
+            { status: "2"},
+            { id: id }
+        )
+
+        return res
+            .status(201)
+            .send(
+                await servicesRepository.findOne({id})
+            );
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
+
 async function finish(req, res) {
     try {
         const {
@@ -511,6 +546,7 @@ module.exports = {
     getService,
     reprogram,
     start,
+    pay,
     finish,
     accept,
     reject,
