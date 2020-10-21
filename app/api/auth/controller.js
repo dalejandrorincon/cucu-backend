@@ -73,7 +73,7 @@ async function login(req, res) {
 
 
                 return res.status(400).send({
-                    message: "Incorrect credentials",
+                    message: "Usuario o contraseña erróneos.",
                     error: 'INCORRECT_CREDENTIALS'
                 });
             }
@@ -81,7 +81,7 @@ async function login(req, res) {
         } catch (e) {
             console.log(e)
             return res.status(400).send({
-                message: "User doesn't exist",
+                message: "El usuario no existe.",
                 error: 'INCORRECT_USER'
             });
         }
