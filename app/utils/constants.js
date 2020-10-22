@@ -9,7 +9,8 @@ const TABLES = {
     reviews: 'reviews',
     transactions: 'transactions',
     unavailabilities: 'unavailabilities',
-    platforms: 'platforms'
+    platforms: 'platforms',
+    notifications: 'notifications'
 };
 
 const REGEX = {

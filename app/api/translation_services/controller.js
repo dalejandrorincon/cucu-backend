@@ -1,5 +1,6 @@
 const servicesRepository = require('./repository');
 const usersRepository = require('../users/repository');
+const notificationsController = require('../notifications/controller');
 const { validationResult } = require('express-validator');
 const moment = require('moment');
 const helper = require('../../utils/helpers');
@@ -187,6 +188,14 @@ async function store(req, res) {
                     break;
             }
 
+            let notifData ={
+                sender_id: body.client_id, 
+                type: "requested", 
+                receiver_id: body.translator_id
+            }
+
+            await notificationsController.create( req, res, notifData )
+
             await servicesRepository.create({
                 ...body,
                 amount: total
@@ -214,7 +223,7 @@ async function update(req, res) {
                 params: { id },
                 body
             } = req;
-            
+                        
             await servicesRepository.update(
                 { ...body },
                 { id: id }
@@ -344,6 +353,14 @@ async function accept(req, res) {
             });
         }
 
+        let notifData ={
+            sender_id: service.translator_id,
+            type: "accepted", 
+            receiver_id: service.client_id 
+        }
+
+        await notificationsController.create( req, res, notifData )
+
         await servicesRepository.update(
             { status: "1" },
             { id: id }
@@ -377,6 +394,14 @@ async function reject(req, res) {
                     'No existe este servicio.'
             });
         }
+
+        let notifData ={
+            sender_id: service.translator_id,
+            type: "rejected", 
+            receiver_id: service.client_id 
+        }
+
+        await notificationsController.create( req, res, notifData )
 
         await servicesRepository.update(
             { status: "6", cancel_reason: cancel_reason },
