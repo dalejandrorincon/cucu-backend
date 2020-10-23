@@ -6,6 +6,16 @@ var methodOverride = require("method-override");
 const knex = require('./db');
 const api = require('./api');
 
+const io = require("socket.io")(8000)/* 
+const socket = io.listen(8000); */
+app.set('socketio', io)
+
+
+const socketClients = new Map();
+
+const { saveSocketClient, deleteSocketClient } = require("./utils/helpers")
+
+
 var router = express.Router();
 
 const exphbs = require('express-handlebars');
@@ -41,7 +51,24 @@ app.use('/api', api);
 router.get('/', function (req, res) {
     res.send("Hello World!");
 });
+
 app.use(router);
+
 app.listen(3000, function () {
     console.log("Node server running on http://localhost:3000");
+});
+
+io.on("connection", (socket) => {
+    console.log(`Client connected [id=${socket.id}]`);
+
+    socket.on('login', function(data) {
+        console.log(data)
+        saveSocketClient(data, socket.id)
+    });
+
+    socket.on("disconnect", () => {
+        socketClients.delete(socket);
+        console.log(`Client gone [id=${socket.id}]`);
+    }); 
+    
 });

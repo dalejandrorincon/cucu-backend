@@ -39,6 +39,30 @@ const decodeToken = async token => {
   }
 };
 
+
+async function saveSocketClient(data, socket) {
+  await redisClient.hset('clients', data, socket, redis.print)
+}
+
+async function deleteSocketClient(socket) {
+  await redisClient.hdel('clients', + socket + "", redis.print)
+}
+
+
+const validateSocket = async (data) => {
+
+  return new Promise(async (resolve, reject) => {
+
+    redisClient.hget('clients', data, (err, reply) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      }
+      resolve(reply);
+    })
+  })
+}
+
 async function saveSession(user) {
   return new Promise(async (resolve, reject) => {
     try {
@@ -151,7 +175,7 @@ const getMailToken = async (userId) => {
 
 
 const getEmailTransporter = () => {
-  
+
   transporter = nodemailer.createTransport({
     host: MAIL_HOST,
     port: MAIL_PORT,
@@ -195,5 +219,8 @@ module.exports = {
   saveMailToken,
   getMailToken,
   sendMail,
-  formatError
+  formatError,
+  saveSocketClient,
+  deleteSocketClient,
+  validateSocket
 };

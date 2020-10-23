@@ -1,9 +1,9 @@
 const notificationRepository = require('./repository');
 const usersRepository = require('../users/repository');
-
 const { validationResult } = require('express-validator');
 
 
+const { validateSocket } = require("../../utils/helpers")
 
 async function userNotifications(req, res) {
     try {
@@ -59,10 +59,15 @@ async function store(req, res) {
 
 async function create(req, res, data) {
     try {
-        console.log("data"+ data)
+        
         await notificationRepository.create({
             ...data
-        });   
+        });
+        
+        const io = req.app.get('socketio');
+        let socket_id = await validateSocket(data.receiver_id)
+        io.to(socket_id).emit('notifications', data);
+
     } catch (error) {
         console.error(error);
         return res.status(500).send({ message: error.message });
