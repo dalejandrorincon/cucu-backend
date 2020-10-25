@@ -187,11 +187,17 @@ async function store(req, res) {
                     total = parseInt(user.rate_minute) * parseInt(body.duration_amount)
                     break;
             }
+        const sender = await usersRepository.findById(body.translator_id);
+        const receiver = await usersRepository.findById(body.translator_id);
 
             let notifData ={
                 sender_id: body.client_id, 
-                type: "requested", 
-                receiver_id: body.translator_id
+                type: "0", 
+                receiver_id: body.translator_id,
+                sender: {
+                    firstname: sender.firstname,
+                    lastname: sender.lastname
+                }
             }
 
             await notificationsController.create( req, res, notifData )
@@ -282,6 +288,21 @@ async function cancel(req, res) {
             });
         }
 
+        const sender = await usersRepository.findById(body.translator_id);
+        const receiver = await usersRepository.findById(body.translator_id);
+        
+        let notifData ={
+            sender_id: body.translator_id,
+            type: "5", 
+            receiver_id: body.client_id ,
+            sender: {
+                firstname: sender.firstname,
+                lastname: sender.lastname
+            }
+        }
+
+        await notificationsController.create( req, res, notifData )
+
         await servicesRepository.update(
             { status: "5", cancel_reason: cancel_reason },
             { id: id }
@@ -352,11 +373,17 @@ async function accept(req, res) {
                     'No existe este servicio.'
             });
         }
+        const sender = await usersRepository.findById(body.translator_id);
+        const receiver = await usersRepository.findById(body.translator_id);
 
         let notifData ={
             sender_id: service.translator_id,
-            type: "accepted", 
-            receiver_id: service.client_id 
+            type: "1", 
+            receiver_id: service.client_id ,
+            sender: {
+                firstname: sender.firstname,
+                lastname: sender.lastname
+            }
         }
 
         await notificationsController.create( req, res, notifData )
@@ -394,11 +421,17 @@ async function reject(req, res) {
                     'No existe este servicio.'
             });
         }
+        const sender = await usersRepository.findById(body.translator_id);
+        const receiver = await usersRepository.findById(body.translator_id);
 
         let notifData ={
             sender_id: service.translator_id,
-            type: "rejected", 
-            receiver_id: service.client_id 
+            type: "6", 
+            receiver_id: service.client_id ,
+            sender: {
+                firstname: sender.firstname,
+                lastname: sender.lastname
+            }
         }
 
         await notificationsController.create( req, res, notifData )
@@ -470,6 +503,20 @@ async function pay(req, res) {
                     'No existe este servicio.'
             });
         }
+        const sender = await usersRepository.findById(body.sender);
+        const receiver = await usersRepository.findById(body.receiver_id);
+
+        let notifData ={
+            sender_id: body.client_id,
+            type: "2", 
+            receiver_id: body.translator_id,
+            sender: {
+                firstname: sender.firstname,
+                lastname: sender.lastname
+            }
+        }
+
+        await notificationsController.create( req, res, notifData )
 
         await servicesRepository.update(
             { status: "2"},

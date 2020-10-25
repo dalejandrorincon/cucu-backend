@@ -3,7 +3,7 @@ const usersRepository = require('../users/repository');
 const { validationResult } = require('express-validator');
 
 
-const { validateSocket } = require("../../utils/helpers")
+const helper = require("../../utils/helpers")
 
 async function userNotifications(req, res) {
     try {
@@ -60,13 +60,13 @@ async function store(req, res) {
 async function create(req, res, data) {
     try {
         
-        await notificationRepository.create({
+        let notif = await notificationRepository.create({
             ...data
         });
-        
+
         const io = req.app.get('socketio');
-        let socket_id = await validateSocket(data.receiver_id)
-        io.to(socket_id).emit('notifications', data);
+        let socket_id = await helper.validateSocket(data.receiver_id)
+        io.to(socket_id).emit('notifications', { ...data, id: notif.id, read: false} );
 
     } catch (error) {
         console.error(error);
@@ -130,6 +130,40 @@ async function update(req, res) {
     }
 }
 
+async function setRead(req, res) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty())
+            return res
+                .status(409)
+                .send({ errors: errors.formatWith(formatError).mapped() });
+        else {
+            const {
+                body: {ids}
+            } = req;
+
+            console.log(ids)
+
+            for (let i = 0; i < ids.length; i++) {
+                const currentId = ids[i];
+                await notificationRepository.update(
+                    { read: true },
+                    { id: currentId }
+                )
+                
+            }
+
+            return res
+                .status(201)
+                .send({ message: 'Notificaciones actualizadas exitosamente' });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
+
 
 async function remove(req, res) {
     try {
@@ -160,5 +194,6 @@ module.exports = {
     create,
     store,
     update,
+    setRead,
     remove
 };

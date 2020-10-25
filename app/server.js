@@ -6,8 +6,7 @@ var methodOverride = require("method-override");
 const knex = require('./db');
 const api = require('./api');
 
-const io = require("socket.io")(8000)/* 
-const socket = io.listen(8000); */
+const io = require("socket.io")(8000)
 app.set('socketio', io)
 
 
