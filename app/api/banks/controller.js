@@ -1,4 +1,4 @@
-const cityRepository = require('./repository');
+const bankRepository = require('./repository');
 const { validationResult } = require('express-validator');
 
 
@@ -8,14 +8,18 @@ async function index(req, res) {
         query: {
             page = 1,
             page_limit = 10,
-            name = '',
-            country_id = ''
+            name = ''
         }
     } = req;
 
     try {
-        const cities = await cityRepository.getCities(page, page_limit, name, country_id);
-        return res.status(200).send(cities);
+        const banks = await bankRepository.getBanks(page, page_limit, name);
+        return res.status(200).send({
+            ...banks,
+            page: parseInt(page),
+            pages: Math.ceil(banks.total / page_limit),
+            total: banks.total
+        });
     } catch (error) {
         console.error(error);
         return res.status(500).send({ message: error.message });
@@ -25,8 +29,18 @@ async function index(req, res) {
 
 async function getAll(req, res) {
     try {
-        const cities = await cityRepository.getAllCities();
-        return res.status(200).send(cities);
+        const banks = await bankRepository.getAllBanks();
+        return res.status(200).send(banks);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
+async function index(req, res) {
+    try {
+        const banks = await bankRepository.find().orderBy('name');
+        return res.status(200).send(banks);
     } catch (error) {
         console.error(error);
         return res.status(500).send({ message: error.message });
@@ -45,13 +59,13 @@ async function store(req, res) {
             console.log(req.body)
             //console.log(body)
 
-            await cityRepository.create({
+            await bankRepository.create({
                 ...body
             });
 
             return res
                 .status(201)
-                .send({ message: 'Ciudad creada exitosamente' });
+                .send({ message: 'Banco creado exitosamente' });
         }
     } catch (error) {
         console.error(error);
@@ -72,14 +86,14 @@ async function update(req, res) {
                 body
             } = req;
             
-            await cityRepository.update(
+            await bankRepository.update(
                 { ...body },
                 { id: id }
             )
 
             return res
                 .status(201)
-                .send({ message: 'Ciudad actualizada exitosamente' });
+                .send({ message: 'Banco actualizado exitosamente' });
         }
     } catch (error) {
         console.error(error);
@@ -100,11 +114,11 @@ async function remove(req, res) {
                 params: { id }
             } = req;
             
-            await cityRepository.deleteById(id)
+            await bankRepository.deleteById(id)
 
             return res
                 .status(201)
-                .send({ message: 'Ciudad removida exitosamente' });
+                .send({ message: 'Banco removido exitosamente' });
         }
     } catch (error) {
         console.error(error);

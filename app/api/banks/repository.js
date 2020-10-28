@@ -1,5 +1,5 @@
 const Base = require('../base.repository');
-const Country = require('./entity');
+const Bank = require('./entity');
 
 const fields = [
   'name',
@@ -12,16 +12,16 @@ class Repository extends Base {
   }
 
   getModel() {
-    return Country;
+    return Bank;
   }
 
-  getAllCountries() {
+  getAllBanks() {
     return this.model
       .query()
       .where("deleted", false);
   }
 
-  getCountries(page, page_limit, name) {
+  getBanks(page, page_limit, name) {
     return this.model
       .query()
       .where("deleted", false)
@@ -30,7 +30,8 @@ class Repository extends Base {
           this.orWhere(raw('lower(unaccent("name"))'), 'like', `%${name}%`);
         }
       })
-      .orderBy('name')
+      .orderBy('created_at')
+      .page(page-1, page_limit)
   }
 }
 

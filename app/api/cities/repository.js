@@ -35,12 +35,12 @@ class Repository extends Base {
         }
       })
       .andWhere(function () {
+        console.log(country_id)
         if (country_id) {
           this.orWhere("country_id", country_id);
         }
       })
       .orderBy('created_at')
-      .page(page-1, page_limit)
   }
 }
 

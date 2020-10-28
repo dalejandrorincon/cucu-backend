@@ -1,8 +1,16 @@
 const Base = require('../base.repository');
-const Country = require('./entity');
+const Data = require('./entity');
 
 const fields = [
-  'name',
+  'id',
+  'user_id',
+  'bank_id',
+  'account_type',
+  'account_number',
+  'owner_name',
+  'document_type',
+  'document_number',
+  'payoneer_account',
   'deleted'
 ];
 
@@ -12,25 +20,21 @@ class Repository extends Base {
   }
 
   getModel() {
-    return Country;
+    return Data;
   }
 
-  getAllCountries() {
+  getAllData() {
     return this.model
       .query()
+      .withGraphFetched('country')
       .where("deleted", false);
   }
 
-  getCountries(page, page_limit, name) {
+  getPaymentData(user_id) {
     return this.model
       .query()
       .where("deleted", false)
-      .andWhere(function () {
-        if (name) {
-          this.orWhere(raw('lower(unaccent("name"))'), 'like', `%${name}%`);
-        }
-      })
-      .orderBy('name')
+      .where("user_id", user_id)
   }
 }
 

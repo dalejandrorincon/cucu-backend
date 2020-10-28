@@ -10,7 +10,10 @@ const TABLES = {
     transactions: 'transactions',
     unavailabilities: 'unavailabilities',
     platforms: 'platforms',
-    notifications: 'notifications'
+    notifications: 'notifications',
+    banks: 'banks',
+    payment_data: 'payment_data',
+
 };
 
 const REGEX = {

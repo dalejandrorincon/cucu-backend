@@ -1,37 +1,34 @@
-const cityRepository = require('./repository');
+const dataRepository = require('./repository');
+const usersRepository = require('../users/repository');
 const { validationResult } = require('express-validator');
 
+const helper = require("../../utils/helpers")
 
 async function index(req, res) {
+    try {
+        const { authorization } = req.headers;
 
-    let {
-        query: {
-            page = 1,
-            page_limit = 10,
-            name = '',
-            country_id = ''
+        if (!authorization) {
+            return res.status(401).send({
+                message: 'Olvidó autenticarse'
+            });
         }
-    } = req;
 
-    try {
-        const cities = await cityRepository.getCities(page, page_limit, name, country_id);
-        return res.status(200).send(cities);
+        const token = authorization.replace("Bearer ", "")
+        const userId = await helper.decodeToken(token);
+        const user = await usersRepository.findById(userId);
+        if (!user) return res.status(403).send({ message: 'Olvidó autenticarse' });
+        
+        const data = await dataRepository.getPaymentData(userId);
+        return res.status(200).send(
+            ...data
+        );
     } catch (error) {
         console.error(error);
         return res.status(500).send({ message: error.message });
     }
 }
 
-
-async function getAll(req, res) {
-    try {
-        const cities = await cityRepository.getAllCities();
-        return res.status(200).send(cities);
-    } catch (error) {
-        console.error(error);
-        return res.status(500).send({ message: error.message });
-    }
-}
 
 async function store(req, res) {
     try {
@@ -45,13 +42,13 @@ async function store(req, res) {
             console.log(req.body)
             //console.log(body)
 
-            await cityRepository.create({
+            await dataRepository.create({
                 ...body
             });
 
             return res
                 .status(201)
-                .send({ message: 'Ciudad creada exitosamente' });
+                .send({ message: 'Datos creados exitosamente' });
         }
     } catch (error) {
         console.error(error);
@@ -68,18 +65,17 @@ async function update(req, res) {
                 .send({ errors: errors.formatWith(formatError).mapped() });
         else {
             const {
-                params: { id },
                 body
             } = req;
             
-            await cityRepository.update(
+            await dataRepository.update(
                 { ...body },
-                { id: id }
+                { user_id: body.user_id }
             )
 
             return res
                 .status(201)
-                .send({ message: 'Ciudad actualizada exitosamente' });
+                .send({ message: 'Datos actualizados exitosamente' });
         }
     } catch (error) {
         console.error(error);
@@ -100,11 +96,11 @@ async function remove(req, res) {
                 params: { id }
             } = req;
             
-            await cityRepository.deleteById(id)
+            await dataRepository.deleteById(id)
 
             return res
                 .status(201)
-                .send({ message: 'Ciudad removida exitosamente' });
+                .send({ message: 'Datos removidos exitosamente' });
         }
     } catch (error) {
         console.error(error);
@@ -117,5 +113,4 @@ module.exports = {
     store,
     update,
     remove,
-    getAll
 };
