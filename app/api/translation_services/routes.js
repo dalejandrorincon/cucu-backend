@@ -18,6 +18,7 @@ router.put('/accept/:id', controller.accept);
 router.put('/reject/:id', controller.reject);
 router.put('/finish/:id', controller.finish);
 router.put('/reprogram/:id', controller.update);
+router.put('/rate/:id', controller.rate);
 router.put('/:id', controller.update);
 router.put('/share/:id', controller.share);
 

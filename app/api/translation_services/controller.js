@@ -564,6 +564,42 @@ async function finish(req, res) {
     }
 }
 
+
+async function rate(req, res) {
+    try {
+        const {
+            params: { id }
+        } = req;
+
+        const service = await servicesRepository.findOne({
+            id
+        });
+
+        if (!service) {
+            return res.status(400).send({
+                message:
+                    'No existe este servicio.'
+            });
+        }
+
+        await servicesRepository.update(
+            { rated: true },
+            { id: id }
+        )
+
+        return res
+            .status(201)
+            .send(
+                await servicesRepository.findOne({id})
+            );
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
+
 async function uploadFile(req, res) {
     try {
         let file = await imageUpload(req, "services")
@@ -617,6 +653,7 @@ module.exports = {
     finish,
     accept,
     reject,
+    rate,
     servicesByTranslator,
     servicesByClient,
     uploadFile,

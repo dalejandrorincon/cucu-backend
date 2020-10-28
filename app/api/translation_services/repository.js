@@ -25,6 +25,7 @@ const fields = [
   'shared_with',
   'cancel_reason',
   'paid_status',
+  'rated',
   'deleted'
 ];
 
@@ -66,7 +67,8 @@ class Repository extends Base {
         'translation_services.time_type',
         'translation_services.shared_with',
         'translation_services.cancel_reason',
-        'translation_services.paid_status'
+        'translation_services.paid_status',
+        'translation_services.rated'
 
       )
       .where("translation_services.deleted", false)
@@ -126,7 +128,8 @@ class Repository extends Base {
         'translation_services.time_type',
         'translation_services.shared_with',
         'translation_services.cancel_reason',
-        'translation_services.paid_status'
+        'translation_services.paid_status',
+        'translation_services.rated'
 
       )
       .where("translation_services.deleted", false)
@@ -227,7 +230,8 @@ class Repository extends Base {
         'translation_services.time_type',
         'translation_services.shared_with',
         'translation_services.cancel_reason',
-        'translation_services.paid_status'
+        'translation_services.paid_status',
+        'translation_services.rated'
       )
       .where("translation_services.deleted", false)
       .where("translation_services.translator_id", userId)
@@ -334,7 +338,8 @@ class Repository extends Base {
         'translation_services.time_type',
         'translation_services.shared_with',
         'translation_services.cancel_reason',
-        'translation_services.paid_status'
+        'translation_services.paid_status',
+        'translation_services.rated'
       )
       .where("translation_services.deleted", false)
       .where("translation_services.client_id", userId)

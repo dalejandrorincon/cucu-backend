@@ -215,6 +215,7 @@ async function getTranslators(req, res) {
                 });
                 avg = total/reviews.length
                 element.rating = avg.toFixed(2)
+                element.total_ratings=reviews.length
             }
 
             if(element.labor_months){
@@ -395,6 +396,8 @@ async function getUser(req, res) {
                     });
                     avg = total/reviews.length
                     user.rating = avg.toFixed(2)
+                    user.total_ratings=reviews.length
+
                 }
 
                 if(user.unavailable==false){

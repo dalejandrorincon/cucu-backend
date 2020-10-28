@@ -124,6 +124,7 @@ async function confirmPayment(req, res) {
             amount: service.amount*100,
             currency: 'usd',
             customer: stripe_id,
+            receipt_email: user.email,
         });
 
         return res.status(200).send({
