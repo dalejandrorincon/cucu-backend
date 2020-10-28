@@ -188,7 +188,6 @@ async function store(req, res) {
                     break;
             }
         const sender = await usersRepository.findById(body.translator_id);
-        const receiver = await usersRepository.findById(body.translator_id);
 
             let notifData ={
                 sender_id: body.client_id, 
@@ -288,13 +287,12 @@ async function cancel(req, res) {
             });
         }
 
-        const sender = await usersRepository.findById(body.translator_id);
-        const receiver = await usersRepository.findById(body.translator_id);
+        const sender = await usersRepository.findById(service.translator_id);
         
         let notifData ={
-            sender_id: body.translator_id,
+            sender_id: service.translator_id,
             type: "5", 
-            receiver_id: body.client_id ,
+            receiver_id: service.client_id ,
             sender: {
                 firstname: sender.firstname,
                 lastname: sender.lastname
@@ -373,8 +371,7 @@ async function accept(req, res) {
                     'No existe este servicio.'
             });
         }
-        const sender = await usersRepository.findById(body.translator_id);
-        const receiver = await usersRepository.findById(body.translator_id);
+        const sender = await usersRepository.findById(service.translator_id);
 
         let notifData ={
             sender_id: service.translator_id,
@@ -422,7 +419,6 @@ async function reject(req, res) {
             });
         }
         const sender = await usersRepository.findById(body.translator_id);
-        const receiver = await usersRepository.findById(body.translator_id);
 
         let notifData ={
             sender_id: service.translator_id,
@@ -503,13 +499,12 @@ async function pay(req, res) {
                     'No existe este servicio.'
             });
         }
-        const sender = await usersRepository.findById(body.sender);
-        const receiver = await usersRepository.findById(body.receiver_id);
+        const sender = await usersRepository.findById(service.client_id);
 
         let notifData ={
-            sender_id: body.client_id,
+            sender_id: service.client_id,
             type: "2", 
-            receiver_id: body.translator_id,
+            receiver_id: service.translator_id,
             sender: {
                 firstname: sender.firstname,
                 lastname: sender.lastname

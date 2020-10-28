@@ -5,7 +5,7 @@ const fields = [
   'id',
   'date',
   'amount',
-  'token_id',
+  'payment_id',
   'translator_id',
   'client_id',
   'service_id',
@@ -40,10 +40,10 @@ class Repository extends Base {
         'transactions.id',
         'transactions.date',
         'transactions.amount',
-        'transactions.token_id'
+        'transactions.payment_id'
 
       )
-      .where("translation_services.deleted", false)
+      .where("transactions.deleted", false)
       
       .innerJoin('users as client', 'client.id', 'translation_services.client_id')
       .innerJoin('users as translator', 'translator.id', 'translation_services.translator_id')
@@ -52,37 +52,72 @@ class Repository extends Base {
       .withGraphFetched('translator(selectNamesAndId)')
       .modifiers({
         selectNamesAndId(builder) {
-          builder.select('firstname', 'lastname', 'id');
+          builder.select('firstname', 'lastname', 'id', 'image_url');
         }
       })
 
   }
 
-  getTransactionsByTranslator(page, page_limit, userId, name, status, service_site, service_type, client_id) {
+  getTransactionsByTranslator(page, page_limit, userId, name, status, service_site, duration_type, service_type, sort_by, sort_order, min_date, max_date) {
     return this.model
       .query()
       .select(
         'transactions.id',
         'transactions.date',
         'transactions.amount',
-        'transactions.token_id'
+        'transactions.payment_id'
       )
-      .where("translation_services.deleted", false)
-      .where("translation_services.translator_id", userId)
+      .where("transactions.deleted", false)
+      .where("transactions.translator_id", userId)
       
-      .innerJoin('users as client', 'client.id', 'translation_services.client_id')
-      .innerJoin('users as translator', 'translator.id', 'translation_services.translator_id')
+      .innerJoin('users as client', 'client.id', 'transactions.client_id')
+      .innerJoin('translation_services as service', 'service.id', 'transactions.service_id')
 
+      .withGraphFetched('service')
       .withGraphFetched('client(selectNamesAndId)')
       .withGraphFetched('translator(selectNamesAndId)')
       .modifiers({
         selectNamesAndId(builder) {
-          builder.select('firstname', 'lastname', 'id');
+          builder.select('firstname', 'lastname', 'id', 'image_url');
         }
       })
 
-      .orderBy('translation_services.date')
+
+      .andWhere(function () {
+        if (status) {
+          this.orWhere("service.status", status);
+        }
+      })
+      .andWhere(function () {
+        if (service_site) {
+          this.orWhere("service.service_site", service_site);
+        }
+      })
+      .andWhere(function () {
+        if (service_type) {
+          this.orWhere("service.service_type", service_type);
+        }
+      })
+      .andWhere(function () {
+        if (duration_type) {
+          this.orWhere("service.duration_type", duration_type);
+        }
+      })
+
+      .andWhere(function () {
+        if (min_date && max_date) {
+          console.log(min_date)
+          this.whereBetween("service.date", [
+            min_date,
+            max_date
+          ]);
+        }
+      })
+
+      .orderBy(sort_by, sort_order)
       .page(page-1, page_limit)
+
+
   }
 
   getTransactionsByClient(page, page_limit, userId, name, status, service_site, service_type, translator_id) {
@@ -92,23 +127,23 @@ class Repository extends Base {
         'transactions.id',
         'transactions.date',
         'transactions.amount',
-        'transactions.token_id'
+        'transactions.payment_id'
       )
-      .where("translation_services.deleted", false)
-      .where("translation_services.client_id", userId)
+      .where("transactions.deleted", false)
+      .where("transactions.client_id", userId)
       
-      .innerJoin('users as client', 'client.id', 'translation_services.client_id')
-      .innerJoin('users as translator', 'translator.id', 'translation_services.translator_id')
-
+      /* .innerJoin('users as client', 'client.id', 'translation_services.client_id')
+      .innerJoin('users as translator', 'translator.id', 'translation_services.translator_id') */
+      .withGraphFetched('service')
       .withGraphFetched('client(selectNamesAndId)')
       .withGraphFetched('translator(selectNamesAndId)')
       .modifiers({
         selectNamesAndId(builder) {
-          builder.select('firstname', 'lastname', 'id');
+          builder.select('firstname', 'lastname', 'id', 'image_url');
         }
       })
 
-      .orderBy('translation_services.date')
+      .orderBy('transactions.created_at')
       .page(page-1, page_limit)
   }
 

@@ -1,5 +1,6 @@
 const Model = require('../model');
 const User = require('../users/entity');
+const Service = require('../translation_services/entity');
 
 class TranslationService extends Model {
   static get tableName() {
@@ -27,7 +28,15 @@ class TranslationService extends Model {
                 from: 'transactions.client_id',
                 to: 'users.id'
             }
-        }
+        },
+        service: {
+          relation: Model.BelongsToOneRelation,
+          modelClass: Service,
+          join: {
+              from: 'transactions.service_id',
+              to: 'translation_services.id'
+          }
+       }
     };
 }
 }
