@@ -47,7 +47,7 @@ module.exports = option => {
                         custom: {
                             options: async (email, { req: { params: { id } } }) => {
                                 const user = await userRepository.findOne({
-                                    email
+                                    email: email.toLowerCase()
                                 });
                                 if (user && user.id != id)
                                     throw new Error(

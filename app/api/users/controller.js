@@ -464,6 +464,8 @@ async function store(req, res) {
                 body.stripe_id = customerPayment.id
             }
 
+            body.email = body.email.toLowerCase()
+
             await usersRepository.create({
                 ...body,
                 password: bcrypt.hashSync(password, bcrypt.genSaltSync(10)),

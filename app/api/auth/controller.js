@@ -28,6 +28,8 @@ async function login(req, res) {
             const user = { password: userPassword, id } = await usersRepository.findOne({ email });
             const userSecurity = { attempts, fail_time } = await getAttempts(id)
 
+            console.log(userSecurity)
+
             if (userSecurity) {
                 if (
                     fail_time &&
@@ -36,7 +38,7 @@ async function login(req, res) {
                 ) {
                     const seconds = 1200 - moment().diff(fail_time, 'seconds');
                     return res.status(429).send({
-                        message: `Usuario bloqueado espere ${seconds} segundos para continuar`
+                        message: `Usuario bloqueado, espere ${seconds} segundos para continuar`
                     });
                 }
             }
@@ -179,7 +181,7 @@ async function checkRecoveryToken(req, res) {
             return res.status(400).send({ message: 'Token no asignado a este usuario' });
         }
 
-        return res.status(400).send({ message: 'Token válido' });
+        return res.status(200).send({ message: 'Token válido' });
 
     } catch (error) {
         return res.status(500).send({ message: error.message });
