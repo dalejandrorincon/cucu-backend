@@ -113,11 +113,12 @@ async function saveSession(user) {
   })
 }
 
-async function deleteSession(userId) {
+async function deleteSession(userId, token) {
   return new Promise(async (resolve, reject) => {
     try {
       console.log(userId)
       let result = await redisClient.hdel('sessions', +userId + "", redis.print)
+      let time = await redisClient.hdel('session-timeouts', +token + "", redis.print)
       console.log("delete")
       console.log(result)
       resolve(result)

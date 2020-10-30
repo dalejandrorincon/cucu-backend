@@ -97,13 +97,23 @@ async function login(req, res) {
 
 async function logout(req, res) {
     try {
-        const {
-            userId
-        } = req.body;
+
+        const { authorization } = req.headers;
+
+        if (!authorization) {
+            return res.status(401).send({
+                message: 'Olvidó autenticarse'
+            });
+        }
+
+        const token = authorization.replace("Bearer ", "")
+        const userId = await decodeToken(token);
+        const user = await usersRepository.findById(userId);
+        if (!user) return res.status(403).send({ message: 'Olvidó autenticarse' });
 
         console.log(userId)
 
-        return deleteSession(userId).then((success) => {
+        return deleteSession(userId, token).then((success) => {
             return res.status(200).send({
                 message: 'Logout Successful'
             });
@@ -133,7 +143,7 @@ async function recoveryPassword(req, res) {
             });
         }
 
-        const token = createToken(user.id, 60, 'minutes');
+        const token = await createToken(user.id, 60, 'minutes');
         await saveMailToken(user.id, token, false);
 
         const url = `${HOST_WEB}/change-password/${token}`;
