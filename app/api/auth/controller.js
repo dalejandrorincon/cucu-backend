@@ -48,10 +48,11 @@ async function login(req, res) {
 
 
             if (isEqual) {
+                let token = await createToken(user.id)
                 return saveSession(user).then((success) => {
                     return res.status(200).send({
                         message: 'Login Successful',
-                        token: createToken(user.id),
+                        token: token,
                         user: user
                     });
                 }).catch((err) => {

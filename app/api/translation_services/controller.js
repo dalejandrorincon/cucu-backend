@@ -5,6 +5,12 @@ const { validationResult } = require('express-validator');
 const moment = require('moment');
 const helper = require('../../utils/helpers');
 const { imageUpload } = require('../../utils/file')
+const { sendMail } = require('../../utils/helpers')
+
+const {
+    HOST_WEB,
+    APP_NAME
+} = process.env;
 
 async function index(req, res) {
 
@@ -306,6 +312,8 @@ async function cancel(req, res) {
             { id: id }
         )
 
+        statusMail(req, res, service.client_id, 5)
+
         return res
             .status(201)
             .send(
@@ -390,6 +398,8 @@ async function accept(req, res) {
             { id: id }
         )
 
+        statusMail(req, res, service.client_id, 1)
+
         return res
             .status(201)
             .send(
@@ -436,6 +446,8 @@ async function reject(req, res) {
             { status: "6", cancel_reason: cancel_reason },
             { id: id }
         )
+
+        statusMail(req, res, service.client_id, 6)
 
         return res
             .status(201)
@@ -517,6 +529,8 @@ async function pay(req, res) {
             { status: "2"},
             { id: id }
         )
+
+        statusMail(req, res, service.translator_id, 2)
 
         return res
             .status(201)
@@ -632,6 +646,61 @@ async function share(req, res) {
                 .status(201)
                 .send({ message: 'Servicio actualizado exitosamente' });
         }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
+async function statusMail(req, res, client_id, new_status) {
+    try {
+        const client = await usersRepository.findOne({
+            id: client_id
+        });
+        if (!client) {
+            return res.status(400).send({
+                message:
+                    'No existe un usuario con este correo.'
+            });
+        }
+
+        let status = ""
+
+        switch(new_status){
+            case 1:
+                status = "aceptado"; 
+                break;
+            case 2:
+                status = "pagado";
+                break;
+            case 5:
+                status = "cancelado";
+                break;
+            case 6:
+                status = "rechazado";
+                break;
+        }
+
+        const url = `${HOST_WEB}/services`;
+
+        res.render(
+            'status_change',
+            {
+                status,
+                url,
+                layout: false,
+                appName: APP_NAME
+            },
+            async (error, html) => {
+                let options = {
+                    html,
+                    to: client.email,
+                    text: 'Servicio actualizado',
+                    subject: 'Servicio actualizado'
+                };
+                await sendMail(options);
+            }
+        );
     } catch (error) {
         console.error(error);
         return res.status(500).send({ message: error.message });

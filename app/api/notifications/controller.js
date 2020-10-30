@@ -18,6 +18,9 @@ async function userNotifications(req, res) {
 
         const token = authorization.replace("Bearer ", "")
         const userId = await helper.decodeToken(token);
+        console.log("userId")
+
+        console.log("userId"+ userId)
         const user = await usersRepository.findById(userId);
         if (!user) return res.status(403).send({ message: 'Olvidó autenticarse' });
 

@@ -13,7 +13,7 @@ const {
   APP_EMAIL
 } = process.env;
 
-const createToken = (userId, time = 7, format = 'days') => {
+const createToken = async (userId, time = 7, format = 'days') => {
   const payload = {
     sub: userId,
     iat: moment().unix(),
@@ -21,7 +21,9 @@ const createToken = (userId, time = 7, format = 'days') => {
       .add(time, format)
       .unix()
   };
-  return jwt.encode(payload, SECRET_TOKEN);
+  let token = await jwt.encode(payload, SECRET_TOKEN)
+  await refreshTimeout(token)
+  return token;
 };
 
 const redis = require('redis')
@@ -31,13 +33,45 @@ const redisClient = redis.createClient({
 
 const decodeToken = async token => {
   try {
-    console.log(token)
+    let checkTimeout = await checkTokenTimeout(token)
+    console.log(checkTimeout)
+    if (checkTimeout){
+      throw new Error("INACTIVE_SESSION");
+    }else{
+      await refreshTimeout(token)
+    }
     const payload = jwt.decode(token, SECRET_TOKEN);
     return payload.sub;
   } catch (err) {
-    throw new Error('Token ha expirado');
+      if(err.message=="INACTIVE_SESSION"){
+        throw new Error("INACTIVE_SESSION");
+      }else{
+        throw new Error("TOKEN_EXPIRED");
+      }
   }
 };
+
+const checkTokenTimeout = async (token) => {
+  return new Promise(async (resolve, reject) => {
+
+    redisClient.hget('session-timeouts', token, (err, reply) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      }
+      let current = moment.duration(moment().diff(reply))
+      let diff = current.hours();
+      if(diff>=2){
+        resolve(true)
+      }
+      resolve(false);
+    })
+  })
+}
+
+const refreshTimeout = async (token) => {
+  await redisClient.hset('session-timeouts', token, moment().format(), redis.print)
+}
 
 
 async function saveSocketClient(data, socket) {
