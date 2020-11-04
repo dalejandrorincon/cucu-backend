@@ -26,6 +26,7 @@ const fields = [
   'cancel_reason',
   'paid_status',
   'rated',
+  'platform_other',
   'deleted'
 ];
 
@@ -68,8 +69,8 @@ class Repository extends Base {
         'translation_services.shared_with',
         'translation_services.cancel_reason',
         'translation_services.paid_status',
-        'translation_services.rated'
-
+        'translation_services.rated',
+        'translation_services.platform_other'
       )
       .where("translation_services.deleted", false)
       .where("translation_services.id", id)
@@ -129,8 +130,8 @@ class Repository extends Base {
         'translation_services.shared_with',
         'translation_services.cancel_reason',
         'translation_services.paid_status',
-        'translation_services.rated'
-
+        'translation_services.rated',
+        'translation_services.platform_other'
       )
       .where("translation_services.deleted", false)
       
@@ -231,14 +232,15 @@ class Repository extends Base {
         'translation_services.shared_with',
         'translation_services.cancel_reason',
         'translation_services.paid_status',
-        'translation_services.rated'
+        'translation_services.rated',
+        'translation_services.platform_other'
       )
       .where("translation_services.deleted", false)
       .where("translation_services.translator_id", userId)
       
       .innerJoin('users as client', 'client.id', 'translation_services.client_id')
       .innerJoin('users as translator', 'translator.id', 'translation_services.translator_id')
-      .innerJoin('platforms as platform', 'platform.id', 'translation_services.platform_id')      
+      //.innerJoin('platforms as platform', 'platform.id', 'translation_services.platform_id')      
 
       .withGraphFetched('client(selectNamesAndId)')
       .withGraphFetched('translator(selectNamesAndRate)')
@@ -339,11 +341,12 @@ class Repository extends Base {
         'translation_services.shared_with',
         'translation_services.cancel_reason',
         'translation_services.paid_status',
-        'translation_services.rated'
+        'translation_services.rated',
+        'translation_services.platform_other'
       )
       .where("translation_services.deleted", false)
       .where("translation_services.client_id", userId)
-      .innerJoin('platforms as platform', 'platform.id', 'translation_services.platform_id')      
+      //.innerJoin('platforms as platform', 'platform.id', 'translation_services.platform_id')      
       .innerJoin('users as client', 'client.id', 'translation_services.client_id')
       .innerJoin('users as translator', 'translator.id', 'translation_services.translator_id')
       .withGraphFetched('platform')

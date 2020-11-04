@@ -212,6 +212,8 @@ async function store(req, res) {
                 amount: total
             });
 
+            statusMail(req, res, body.translator_id, 0)
+
             return res
                 .status(201)
                 .send({ message: 'Servicio creado exitosamente' });
@@ -667,6 +669,9 @@ async function statusMail(req, res, client_id, new_status) {
         let status = ""
 
         switch(new_status){
+            case 0:
+                status = "creado"; 
+                break;
             case 1:
                 status = "aceptado"; 
                 break;
