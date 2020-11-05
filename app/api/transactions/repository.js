@@ -59,6 +59,10 @@ class Repository extends Base {
   }
 
   getTransactionsByTranslator(page, page_limit, userId, name, status, service_site, duration_type, service_type, sort_by, sort_order, min_date, max_date) {
+    if(sort_by=="transactions.created_at_asc"){
+      sort_by="transactions.created_at"
+      sort_order="asc"
+    }
     return this.model
       .query()
       .select(

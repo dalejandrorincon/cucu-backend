@@ -25,6 +25,10 @@ class Repository extends Base {
   }
 
   getUserUnavailabilities(page, page_limit, userId, min_date, max_date, sort_by, sort_order){
+    if(sort_by=="created_at_asc"){
+      sort_by="created_at"
+      sort_order="asc"
+    }
 
     console.log(sort_by)
     return this.model

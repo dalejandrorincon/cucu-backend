@@ -209,6 +209,10 @@ class Repository extends Base {
     if(!sort_order){
       sort_order = "desc"
     }
+    if(sort_by=="created_at_asc"){
+      sort_by="created_at"
+      sort_order="asc"
+    }
     return this.model
       .query()
       .select(
@@ -317,6 +321,10 @@ class Repository extends Base {
     }
     if(!sort_order){
       sort_order = "desc"
+    }
+    if(sort_by=="created_at_asc"){
+      sort_by="created_at"
+      sort_order="asc"
     }
     return this.model
       .query()
