@@ -151,6 +151,32 @@ class Repository extends Base {
       .page(page-1, page_limit)
   }
 
+  getAllTransactionsTranslator(translator_id){
+    return this.model
+      .query()
+      .select(
+        'transactions.id',
+        'transactions.date',
+        'transactions.amount',
+        'transactions.payment_id'
+      )
+      .where("transactions.deleted", false)
+      .where("transactions.translator_id", translator_id)
+  }
+
+  getAllTransactionsClient(client_id){
+    return this.model
+      .query()
+      .select(
+        'transactions.id',
+        'transactions.date',
+        'transactions.amount',
+        'transactions.payment_id'
+      )
+      .where("transactions.deleted", false)
+      .where("transactions.client_id", client_id)
+  }
+
 
 
 }

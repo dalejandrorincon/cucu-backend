@@ -42,6 +42,15 @@ class baseRepository {
       .then(array => (array.length ? array[0] : null));
   }
 
+  updateNulls(data = {}, where = {}) {
+    return this.model
+      .query()
+      .patch(data)
+      .where(where)
+      .returning('*')
+      .then(array => (array.length ? array[0] : null));
+  }
+
   deleteById(id) {
     let del = {deleted: true}
     return (

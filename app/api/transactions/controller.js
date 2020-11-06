@@ -114,6 +114,42 @@ async function getTransaction(req, res) {
     }
 }
 
+
+async function getTotalTransactions(req, res, userId) {
+
+    try {
+
+        const user = await usersRepository.findById(userId);
+
+        switch(user.role){
+            case "2":
+                transactions = await transactionsRepository.getAllTransactionsTranslator(userId);
+                break;
+            case "3":
+            case "4":            
+                transactions = await transactionsRepository.getAllTransactionsClient(userId);
+                break;
+            default:
+                return res.status(500).send({ message: "No es posible solicitar transacciones asociadas a este rol." });
+        }
+
+
+        let amount = 0
+        if(transactions){
+            transactions.forEach(element => {
+                amount += parseInt(element.amount)
+            });
+
+        }
+
+        return amount;
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
 async function storeOnPay(req, res) {
     try {
         const errors = validationResult(req);
@@ -246,5 +282,6 @@ module.exports = {
     remove,
     getAll,
     getTransaction,
-    transactionsByUser
+    transactionsByUser,
+    getTotalTransactions
 };
