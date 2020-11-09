@@ -63,6 +63,11 @@ class Repository extends Base {
       sort_by="transactions.created_at"
       sort_order="asc"
     }
+
+    if(sort_by=="transactions.from_asc"){
+      sort_by="transactions.from"
+      sort_order="asc"
+    }
     return this.model
       .query()
       .select(

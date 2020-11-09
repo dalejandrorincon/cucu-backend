@@ -30,6 +30,11 @@ class Repository extends Base {
       sort_order="asc"
     }
 
+    if(sort_by=="date_asc"){
+      sort_by="date"
+      sort_order="asc"
+    }
+
     console.log(sort_by)
     return this.model
       .query()
