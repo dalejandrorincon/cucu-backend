@@ -213,6 +213,10 @@ class Repository extends Base {
       sort_by="created_at"
       sort_order="asc"
     }
+    if(sort_by=="date_asc"){
+      sort_by="date"
+      sort_order="asc"
+    }
     return this.model
       .query()
       .select(
@@ -324,6 +328,10 @@ class Repository extends Base {
     }
     if(sort_by=="created_at_asc"){
       sort_by="created_at"
+      sort_order="asc"
+    }
+    if(sort_by=="date_asc"){
+      sort_by="date"
       sort_order="asc"
     }
     return this.model

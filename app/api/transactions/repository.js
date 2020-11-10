@@ -63,6 +63,11 @@ class Repository extends Base {
       sort_by="transactions.created_at"
       sort_order="asc"
     }
+
+    if(sort_by=="transactions.date_asc"){
+      sort_by="transactions.date"
+      sort_order="asc"
+    }
     return this.model
       .query()
       .select(
@@ -149,6 +154,32 @@ class Repository extends Base {
 
       .orderBy('transactions.created_at')
       .page(page-1, page_limit)
+  }
+
+  getAllTransactionsTranslator(translator_id){
+    return this.model
+      .query()
+      .select(
+        'transactions.id',
+        'transactions.date',
+        'transactions.amount',
+        'transactions.payment_id'
+      )
+      .where("transactions.deleted", false)
+      .where("transactions.translator_id", translator_id)
+  }
+
+  getAllTransactionsClient(client_id){
+    return this.model
+      .query()
+      .select(
+        'transactions.id',
+        'transactions.date',
+        'transactions.amount',
+        'transactions.payment_id'
+      )
+      .where("transactions.deleted", false)
+      .where("transactions.client_id", client_id)
   }
 
 

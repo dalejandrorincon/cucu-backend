@@ -60,7 +60,7 @@ async function servicesByTranslator(req, res) {
             amount = '',
             min_date = '',
             max_date = '',
-            sort_by = 'created_at',
+            sort_by = 'date',
             sort_order = 'desc',
             duration_type = ""
         }
@@ -107,7 +107,7 @@ async function servicesByClient(req, res) {
             amount = '',
             min_date = '',
             max_date = '',
-            sort_by = 'created_at',
+            sort_by = 'date',
             sort_order = 'desc',
             duration_type = ""
         }
@@ -212,7 +212,9 @@ async function store(req, res) {
                 amount: total
             });
 
-            statusMail(req, res, body.translator_id, 0)
+            statusMail(req, res, body.client_id, 0, "client")
+            statusMail(req, res, body.translator_id, 0, "translator")
+            
 
             return res
                 .status(201)
@@ -314,7 +316,7 @@ async function cancel(req, res) {
             { id: id }
         )
 
-        statusMail(req, res, service.client_id, 5)
+        statusMail(req, res, service.client_id, 5, "client")
 
         return res
             .status(201)
@@ -400,7 +402,7 @@ async function accept(req, res) {
             { id: id }
         )
 
-        statusMail(req, res, service.client_id, 1)
+        statusMail(req, res, service.client_id, 1, "client")
 
         return res
             .status(201)
@@ -430,7 +432,7 @@ async function reject(req, res) {
                     'No existe este servicio.'
             });
         }
-        const sender = await usersRepository.findById(body.translator_id);
+        const sender = await usersRepository.findById(service.translator_id);
 
         let notifData ={
             sender_id: service.translator_id,
@@ -532,7 +534,8 @@ async function pay(req, res) {
             { id: id }
         )
 
-        statusMail(req, res, service.translator_id, 2)
+        statusMail(req, res, service.translator_id, 2, "translator")
+        statusMail(req, res, service.client_id, 2, "client")
 
         return res
             .status(201)
@@ -654,7 +657,7 @@ async function share(req, res) {
     }
 }
 
-async function statusMail(req, res, client_id, new_status) {
+async function statusMail(req, res, client_id, new_status, client_type, lang="ES") {
     try {
         const client = await usersRepository.findOne({
             id: client_id
@@ -667,41 +670,64 @@ async function statusMail(req, res, client_id, new_status) {
         }
 
         let status = ""
+        let subject = ""
+        let template = ""
+
+        template = "status_"+new_status+"_client_"+lang
 
         switch(new_status){
             case 0:
-                status = "creado"; 
+                subject= "Servicio Creado"
+                if(client_type=="translator"){
+                    status = "creado"
+                    template = "new_order_translator_ES"
+                }
                 break;
             case 1:
-                status = "aceptado"; 
+                subject= "Servicio Aceptado"
                 break;
             case 2:
-                status = "pagado";
+                subject= "Servicio Pagado"
+                if(client_type=="translator"){
+                    status = "pagado"
+                    template = "paid_order_translator_ES"
+                }
+                break;
+            case 3:
+                subject= "Servicio Finalizado"
                 break;
             case 5:
                 status = "cancelado";
+                subject = "Servicio cancelado"
+                template = "status_change"
                 break;
             case 6:
                 status = "rechazado";
+                subject = "Servicio rechazado"
+                template = "status_change"
                 break;
         }
 
         const url = `${HOST_WEB}/services`;
 
         res.render(
-            'status_change',
+            template,
             {
                 status,
                 url,
                 layout: false,
-                appName: APP_NAME
+                appName: APP_NAME,
+                contactName: APP_NAME,
+                userName: client.firstname,
+                contactMail: "info@cucu.us"
             },
             async (error, html) => {
                 let options = {
                     html,
                     to: client.email,
-                    text: 'Servicio actualizado',
-                    subject: 'Servicio actualizado'
+                    text: subject,
+                    subject: subject,
+
                 };
                 await sendMail(options);
             }

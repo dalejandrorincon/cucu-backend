@@ -68,7 +68,7 @@ async function update(req, res) {
                 body
             } = req;
             
-            await dataRepository.update(
+            await dataRepository.updateNulls(
                 { ...body },
                 { user_id: body.user_id }
             )

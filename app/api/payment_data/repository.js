@@ -4,6 +4,7 @@ const Data = require('./entity');
 const fields = [
   'id',
   'user_id',
+  'bank',
   'bank_id',
   'account_type',
   'account_number',

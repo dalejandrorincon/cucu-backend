@@ -5,6 +5,7 @@ const reviewsRepository = require('../reviews/repository');
 const platformsRepository = require('../platforms/repository');
 const servicesRepository = require('../translation_services/repository');
 const unavailabilitiesRepository = require('../unavailabilities/repository');
+const transactionsController = require('../transactions/controller');
 
 const { formatError } = require('../../utils/helpers');
 const { decodeToken } = require('../../utils/helpers');
@@ -419,11 +420,15 @@ async function getUser(req, res) {
                         user.unavailable=true
                     }
                 }
+
+                user.total_transactions = await transactionsController.getTotalTransactions(req, res, user.id)
                 
             }
             if(user.role == "3" || user.role == "4"){
                 const services = await servicesRepository.getServicesByClient(1, 10, user.id)
                 user.total_services = services.total
+                user.total_transactions = await transactionsController.getTotalTransactions(req, res, user.id)
+
             }
 
 

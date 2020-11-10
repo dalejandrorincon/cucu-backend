@@ -44,7 +44,7 @@ async function transactionsByUser(req, res) {
             min_date = '',
             max_date = '',
             duration_type = "",
-            sort_by = "transactions.created_at",
+            sort_by = "transactions.date",
             sort_order = "asc"
         }
     } = req;
@@ -107,6 +107,42 @@ async function getTransaction(req, res) {
 
         const transaction = await transactionsRepository.getTransaction(id);
         return res.status(200).send(transaction);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
+
+async function getTotalTransactions(req, res, userId) {
+
+    try {
+
+        const user = await usersRepository.findById(userId);
+
+        switch(user.role){
+            case "2":
+                transactions = await transactionsRepository.getAllTransactionsTranslator(userId);
+                break;
+            case "3":
+            case "4":            
+                transactions = await transactionsRepository.getAllTransactionsClient(userId);
+                break;
+            default:
+                return res.status(500).send({ message: "No es posible solicitar transacciones asociadas a este rol." });
+        }
+
+
+        let amount = 0
+        if(transactions){
+            transactions.forEach(element => {
+                amount += parseInt(element.amount)
+            });
+
+        }
+
+        return amount;
 
     } catch (error) {
         console.error(error);
@@ -246,5 +282,6 @@ module.exports = {
     remove,
     getAll,
     getTransaction,
-    transactionsByUser
+    transactionsByUser,
+    getTotalTransactions
 };
