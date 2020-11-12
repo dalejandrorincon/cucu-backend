@@ -294,7 +294,7 @@ async function getTranslators(req, res) {
         }
 
         if(min_experience!='' && min_experience!="0" && max_experience!=''){
-            users = users.filter(item => item.total_experience_years >= min_experience && item.total_experience_years <= max_experience)
+            users = users.filter(item => item.labor_months >= min_experience && item.labor_months <= max_experience)
         }
 
         
