@@ -248,12 +248,12 @@ class Repository extends Base {
         }
       })
 
-      .andWhere(function () {
+      /* .andWhere(function () {
         if(languages){
           let parsed = JSON.parse(languages)
           this.whereJsonSupersetOf('languages', parsed)
         }
-      })
+      }) */
 
       
       .andWhere(function () {
@@ -261,14 +261,7 @@ class Repository extends Base {
           this.orWhere(raw('lower(unaccent(users."firstname"))'), 'like', `%${name}%`);
           this.orWhere(raw('lower(unaccent(users."lastname"))'), 'like', `%${name}%`);
         }
-      })   
-
-      .andWhere(function () {
-        if (languages) {
-          let parsed = JSON.parse(languages)
-          this.whereJsonSupersetOf('languages', parsed)
-        }
-      })
+      })         
 
 
   }

@@ -302,6 +302,22 @@ async function getTranslators(req, res) {
             users = users.filter(item => item.toRemoveFromAvailables != true);
         }
 
+        if(languages){
+            let to = JSON.parse(languages)[0].to
+            let from = JSON.parse(languages)[0].from
+            let found = []
+            users.forEach(user => {
+                user.languages.forEach(element=>{
+                    console.log(element.to.id)
+                    if(element.to.id == to && element.from.id == from){
+                        found.push(user)
+                        console.log("found")
+                    }
+                })
+            });
+            users=found
+        }
+
         let total = users.length
       
         users = users.slice((page - 1) * page_limit, page * page_limit)
