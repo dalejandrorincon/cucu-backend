@@ -45,7 +45,7 @@ async function transactionsByUser(req, res) {
             max_date = '',
             duration_type = "",
             sort_by = "transactions.date",
-            sort_order = "asc"
+            sort_order = "desc"
         }
     } = req;
 

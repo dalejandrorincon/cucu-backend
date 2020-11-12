@@ -6,7 +6,11 @@ exports.seed = function(knex) {
     .then(function () {
       // Inserts seed entries
       return knex(TABLES.platforms).insert([
-        {id: 1, name: 'Zoom'},
+        {name: 'Meet'},
+        {name: 'Zoom'},
+        {name: 'Hangouts'},
+        {name: 'Teams'},
+        {name: 'Skype'},
       ]);
     });
 };

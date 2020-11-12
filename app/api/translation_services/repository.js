@@ -217,6 +217,13 @@ class Repository extends Base {
       sort_by="date"
       sort_order="asc"
     }
+    if(sort_by=="duration_amount"){
+      sort_by=raw("duration_amount::int")
+    }
+
+    if(sort_by=="created_at"){
+      sort_by="translation_services.created_at"
+    }
     return this.model
       .query()
       .select(
@@ -314,7 +321,7 @@ class Repository extends Base {
         }
       })
 
-      .orderBy('translation_services.'+sort_by, sort_order)
+      .orderBy(sort_by, sort_order)
 
       .page(page-1, page_limit)
   }
@@ -334,6 +341,13 @@ class Repository extends Base {
       sort_by="date"
       sort_order="asc"
     }
+    if(sort_by=="duration_amount"){
+      sort_by=raw("duration_amount::int")
+    }
+    if(sort_by=="created_at"){
+      sort_by="translation_services.created_at"
+    }
+    
     return this.model
       .query()
       .select(
@@ -428,7 +442,7 @@ class Repository extends Base {
         }
       })
 
-      .orderBy('translation_services.'+sort_by, sort_order)
+      .orderBy(sort_by, sort_order)
 
       .page(page-1, page_limit)
   }

@@ -48,6 +48,10 @@ class Repository extends Base {
             min_date,
             max_date
           ]);
+          this.whereBetween("unavailabilities.to", [
+            min_date,
+            max_date
+          ]);
         }
       })
 
