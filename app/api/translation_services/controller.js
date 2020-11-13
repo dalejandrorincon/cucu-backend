@@ -212,8 +212,8 @@ async function store(req, res) {
                 amount: total
             });
 
-            statusMail(req, res, body.client_id, 0, "client")
-            statusMail(req, res, body.translator_id, 0, "translator")
+            statusMail(req, res, body.client_id, 0, "client", req.body.lang)
+            statusMail(req, res, body.translator_id, 0, "translator", req.body.lang)
             
 
             return res
@@ -316,7 +316,7 @@ async function cancel(req, res) {
             { id: id }
         )
 
-        statusMail(req, res, service.client_id, 5, "client")
+        statusMail(req, res, service.client_id, 5, "client", req.body.lang)
 
         return res
             .status(201)
@@ -402,7 +402,7 @@ async function accept(req, res) {
             { id: id }
         )
 
-        statusMail(req, res, service.client_id, 1, "client")
+        statusMail(req, res, service.client_id, 1, "client", req.body.lang)
 
         return res
             .status(201)
@@ -451,7 +451,7 @@ async function reject(req, res) {
             { id: id }
         )
 
-        statusMail(req, res, service.client_id, 6)
+        statusMail(req, res, service.client_id, 6, '', req.body.lang)
 
         return res
             .status(201)
@@ -571,6 +571,9 @@ async function finish(req, res) {
             { id: id }
         )
 
+        statusMail(req, res, service.translator_id, 3, "translator")
+        statusMail(req, res, service.client_id, 3, "client")
+
         return res
             .status(201)
             .send(
@@ -682,9 +685,15 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
                     status = "creado"
                     template = "new_order_translator_ES"
                 }
+                if(lang="EN"){
+                    subject= "Service Created"
+                }
                 break;
             case 1:
                 subject= "Servicio Aceptado"
+                if(lang="EN"){
+                    subject= "Service Accepted"
+                }
                 break;
             case 2:
                 subject= "Servicio Pagado"
@@ -692,18 +701,30 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
                     status = "pagado"
                     template = "paid_order_translator_ES"
                 }
+                if(lang="EN"){
+                    subject= "Service Paid"
+                }
                 break;
             case 3:
                 subject= "Servicio Finalizado"
+                if(lang="EN"){
+                    subject= "Service Finished"
+                }
                 break;
             case 5:
                 status = "cancelado";
                 subject = "Servicio cancelado"
                 template = "status_change"
+                if(lang="EN"){
+                    subject= "Service Cancelled"
+                }
                 break;
             case 6:
                 status = "rechazado";
                 subject = "Servicio rechazado"
+                if(lang="EN"){
+                    subject= "Service rejected"
+                }
                 template = "status_change"
                 break;
         }
