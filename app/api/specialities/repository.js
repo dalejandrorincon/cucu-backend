@@ -3,7 +3,8 @@ const Speciality = require('./entity');
 
 const fields = [
   'id',
-  'name',
+  'name_es',
+  'name_en',
   'deleted'
 ];
 
@@ -22,7 +23,7 @@ class Repository extends Base {
       .where("deleted", false);
   }
 
-  getSpecialities(page, page_limit, name) {
+  getSpecialities(page, page_limit, name, lang) {
     return this.model
       .query()
       .where("deleted", false)
@@ -31,7 +32,7 @@ class Repository extends Base {
           this.orWhere(raw('lower(unaccent("name"))'), 'like', `%${name}%`);
         }
       })
-      .orderBy('created_at')
+      .orderBy('name_'+lang)
       .page(page-1, page_limit)
   }
 }

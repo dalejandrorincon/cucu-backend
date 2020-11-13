@@ -8,12 +8,13 @@ async function index(req, res) {
         query: {
             page = 1,
             page_limit = 10,
-            name = ''
+            name = '',
+            lang = 'en'
         }
     } = req;
 
     try {
-        const specialities = await specialityRepository.getSpecialities(page, page_limit, name);
+        const specialities = await specialityRepository.getSpecialities(page, page_limit, name, lang);
         return res.status(200).send({
             ...specialities,
             page: parseInt(page),

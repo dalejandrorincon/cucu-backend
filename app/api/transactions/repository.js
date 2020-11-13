@@ -1,5 +1,6 @@
 const Base = require('../base.repository');
 const Transaction = require('./entity');
+const { raw } = require('objection');
 
 const fields = [
   'id',
@@ -68,6 +69,11 @@ class Repository extends Base {
       sort_by="transactions.date"
       sort_order="asc"
     }
+
+    if(sort_by=="service.duration_amount"){
+      sort_by=raw("service.duration_amount::int")
+    }
+    
     return this.model
       .query()
       .select(

@@ -16,6 +16,8 @@ const fields = [
   'rate_hour',
   'country_id',
   'city_id',
+  'country',
+  'city',
   'department_id',
   'address_1',
   'address_2',
@@ -60,6 +62,8 @@ class Repository extends Base {
         'disabled',
         'country_id',
         'city_id',
+        'country',
+        'city',
         'department_id',
         'address_1',
         'address_2',
@@ -126,6 +130,8 @@ class Repository extends Base {
         'disabled',
         'country_id',
         'city_id',
+        'country',
+        'city',
         'department_id',
         'address_1',
         'address_2',
@@ -167,6 +173,8 @@ class Repository extends Base {
         'disabled',
         'country_id',
         'city_id',
+        'country',
+        'city',
         'department_id',
         'address_1',
         'address_2',
@@ -207,6 +215,8 @@ class Repository extends Base {
         'rate_hour',
         'country_id',
         'city_id',
+        'country',
+        'city',
         'department_id',
         'address_1',
         'address_2',
@@ -238,12 +248,12 @@ class Repository extends Base {
         }
       })
 
-      .andWhere(function () {
+      /* .andWhere(function () {
         if(languages){
           let parsed = JSON.parse(languages)
           this.whereJsonSupersetOf('languages', parsed)
         }
-      })
+      }) */
 
       
       .andWhere(function () {
@@ -251,14 +261,7 @@ class Repository extends Base {
           this.orWhere(raw('lower(unaccent(users."firstname"))'), 'like', `%${name}%`);
           this.orWhere(raw('lower(unaccent(users."lastname"))'), 'like', `%${name}%`);
         }
-      })   
-
-      .andWhere(function () {
-        if (languages) {
-          let parsed = JSON.parse(languages)
-          this.whereJsonSupersetOf('languages', parsed)
-        }
-      })
+      })         
 
 
   }
@@ -279,6 +282,8 @@ class Repository extends Base {
         'rate_hour',
         'country_id',
         'city_id',
+        'country',
+        'city',
         'department_id',
         'address_1',
         'address_2',

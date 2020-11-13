@@ -294,12 +294,28 @@ async function getTranslators(req, res) {
         }
 
         if(min_experience!='' && min_experience!="0" && max_experience!=''){
-            users = users.filter(item => item.total_experience_years >= min_experience && item.total_experience_years <= max_experience)
+            users = users.filter(item => item.labor_months >= min_experience && item.labor_months <= max_experience)
         }
 
         
         if(min_available_time!='' && max_available_time){
             users = users.filter(item => item.toRemoveFromAvailables != true);
+        }
+
+        if(languages){
+            let to = JSON.parse(languages)[0].to
+            let from = JSON.parse(languages)[0].from
+            let found = []
+            users.forEach(user => {
+                user.languages.forEach(element=>{
+                    console.log(element.to.id)
+                    if(element.to.id == to && element.from.id == from){
+                        found.push(user)
+                        console.log("found")
+                    }
+                })
+            });
+            users=found
         }
 
         let total = users.length
