@@ -12,6 +12,7 @@ const fields = [
   'document_type',
   'document_number',
   'payoneer_account',
+  'country_id',
   'deleted'
 ];
 
