@@ -9,7 +9,8 @@ const { sendMail } = require('../../utils/helpers')
 
 const {
     HOST_WEB,
-    APP_NAME
+    APP_NAME,
+    CONTACT_MAIL
 } = process.env;
 
 async function index(req, res) {
@@ -698,13 +699,13 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
                 if(client_type=="translator"){
                     template = "new_order_translator_"+lang
                 }
-                if(lang="EN"){
+                if(lang=="EN"){
                     subject= "Service Created"
                 }
                 break;
             case 1:
                 subject= "Servicio Aceptado"
-                if(lang="EN"){
+                if(lang=="EN"){
                     subject= "Service Accepted"
                 }
                 break;
@@ -713,13 +714,13 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
                 if(client_type=="translator"){
                     template = "paid_order_translator_"+lang
                 }
-                if(lang="EN"){
+                if(lang=="EN"){
                     subject= "Service Paid"
                 }
                 break;
             case 3:
                 subject= "Servicio Finalizado"
-                if(lang="EN"){
+                if(lang=="EN"){
                     subject= "Service Finished"
                 }
                 break;
@@ -727,7 +728,7 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
                 status = "cancelado";
                 subject = "Servicio cancelado"
                 template = "status_change_"+lang
-                if(lang="EN"){
+                if(lang=="EN"){
                     subject= "Service Cancelled"
                     status = "cancelled";
                 }
@@ -735,7 +736,7 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
             case 6:
                 status = "rechazado";
                 subject = "Servicio rechazado"
-                if(lang="EN"){
+                if(lang=="EN"){
                     subject= "Service rejected"
                     status = "rejected";
                 }
@@ -747,10 +748,11 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
 
         if(lang=="EN"){
             data.durationType == "0" ? data.durationType="hours" : data.durationType="minutes"
-        }
-        if(lang=="ES"){
+        }else{
             data.durationType == "0" ? data.durationType="horas" : data.durationType="minutos"
         }
+        let mailto = client.email + "," + CONTACT_MAIL
+        console.log(mailto)
         res.render(
             template,
             {
@@ -764,12 +766,12 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
                 duration: data.duration,
                 durationType: data.durationType,
                 startDate: data.date,
-                contactMail: "info@cucu.us"
+                contactMail: CONTACT_MAIL
             },
             async (error, html) => {
                 let options = {
                     html,
-                    to: client.email ? client.email : "admincucu@mailinator.com",
+                    to: mailto,
                     text: subject,
                     subject: subject,
 
