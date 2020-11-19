@@ -186,11 +186,11 @@ async function store(req, res) {
             const user = await usersRepository.findById(body.translator_id);
             switch (body.duration_type) {
                 case "0":
-                    total = parseInt(user.rate_hour) * parseInt(body.duration_amount)
+                    total = parseInt(user.rate_hour) * parseInt(body.duration_amount) + 5
                     break;
             
                 case "1":
-                    total = parseInt(user.rate_minute) * parseInt(body.duration_amount)
+                    total = parseInt(user.rate_minute) * parseInt(body.duration_amount) + 5
                     break;
             }
         const sender = await usersRepository.findById(body.translator_id);
@@ -212,8 +212,15 @@ async function store(req, res) {
                 amount: total
             });
 
-            statusMail(req, res, body.client_id, 0, "client", req.body.lang)
-            statusMail(req, res, body.translator_id, 0, "translator", req.body.lang)
+            let data = {
+                clientName: sender.firstname+" "+sender.lastname,
+                duration: body.duration_amount,
+                duration_type: body.duration_type,
+                date: moment(body.date).format('YYYY-MM-DD')
+            }
+
+            statusMail(req, res, body.client_id, 0, "client", req.body.lang, data)
+            statusMail(req, res, body.translator_id, 0, "translator", req.body.lang, data)
             
 
             return res
@@ -534,8 +541,15 @@ async function pay(req, res) {
             { id: id }
         )
 
-        statusMail(req, res, service.translator_id, 2, "translator")
-        statusMail(req, res, service.client_id, 2, "client")
+        let data = {
+            clientName: sender.firstname+" "+sender.lastname,
+            duration: service.duration_amount,
+            duration_type: service.duration_type,
+            date: moment(service.date).format('YYYY-MM-DD')
+        }
+
+        statusMail(req, res, service.translator_id, 2, "translator", req.body.lang, data)
+        statusMail(req, res, service.client_id, 2, "client", req.body.lang, data)
 
         return res
             .status(201)
@@ -571,8 +585,8 @@ async function finish(req, res) {
             { id: id }
         )
 
-        statusMail(req, res, service.translator_id, 3, "translator")
-        statusMail(req, res, service.client_id, 3, "client")
+        statusMail(req, res, service.translator_id, 3, "translator", req.body.lang)
+        statusMail(req, res, service.client_id, 3, "client", req.body.lang)
 
         return res
             .status(201)
@@ -605,7 +619,7 @@ async function rate(req, res) {
         }
 
         await servicesRepository.update(
-            { rated: true },
+            { rated: true, status: "4" },
             { id: id }
         )
 
@@ -660,7 +674,7 @@ async function share(req, res) {
     }
 }
 
-async function statusMail(req, res, client_id, new_status, client_type, lang="ES") {
+async function statusMail(req, res, client_id, new_status, client_type, lang="ES", data={}) {
     try {
         const client = await usersRepository.findOne({
             id: client_id
@@ -682,8 +696,7 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
             case 0:
                 subject= "Servicio Creado"
                 if(client_type=="translator"){
-                    status = "creado"
-                    template = "new_order_translator_ES"
+                    template = "new_order_translator_"+lang
                 }
                 if(lang="EN"){
                     subject= "Service Created"
@@ -698,8 +711,7 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
             case 2:
                 subject= "Servicio Pagado"
                 if(client_type=="translator"){
-                    status = "pagado"
-                    template = "paid_order_translator_ES"
+                    template = "paid_order_translator_"+lang
                 }
                 if(lang="EN"){
                     subject= "Service Paid"
@@ -714,9 +726,10 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
             case 5:
                 status = "cancelado";
                 subject = "Servicio cancelado"
-                template = "status_change"
+                template = "status_change_"+lang
                 if(lang="EN"){
                     subject= "Service Cancelled"
+                    status = "cancelled";
                 }
                 break;
             case 6:
@@ -724,13 +737,20 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
                 subject = "Servicio rechazado"
                 if(lang="EN"){
                     subject= "Service rejected"
+                    status = "rejected";
                 }
-                template = "status_change"
+                template = "status_change_"+lang
                 break;
         }
 
         const url = `${HOST_WEB}/services`;
 
+        if(lang=="EN"){
+            data.durationType == "0" ? data.durationType="hours" : data.durationType="minutes"
+        }
+        if(lang=="ES"){
+            data.durationType == "0" ? data.durationType="horas" : data.durationType="minutos"
+        }
         res.render(
             template,
             {
@@ -740,12 +760,16 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
                 appName: APP_NAME,
                 contactName: APP_NAME,
                 userName: client.firstname,
+                clientName: data.clientName,
+                duration: data.duration,
+                durationType: data.durationType,
+                startDate: data.date,
                 contactMail: "info@cucu.us"
             },
             async (error, html) => {
                 let options = {
                     html,
-                    to: client.email,
+                    to: client.email ? client.email : "admincucu@mailinator.com",
                     text: subject,
                     subject: subject,
 

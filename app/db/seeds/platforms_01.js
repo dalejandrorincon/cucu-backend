@@ -11,6 +11,9 @@ exports.seed = function(knex) {
         {name: 'Hangouts'},
         {name: 'Teams'},
         {name: 'Skype'},
+        {name: 'Kudo'},
+        {name: 'Interprefy'},
+        {name: 'Voiceboxer'}
       ]);
     });
 };

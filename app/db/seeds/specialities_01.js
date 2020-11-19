@@ -76,7 +76,7 @@ exports.seed = function(knex) {
         },
         {
             name_es: "Innovación y emprendimiento",
-            name_en: "Innovation and enterprising"
+            name_en: "Innovation and Entrepreneurship"
         },
         {
             name_es: "Jurídica",
