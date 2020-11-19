@@ -132,7 +132,7 @@ async function logout(req, res) {
 async function recoveryPassword(req, res) {
     try {
 
-        const { email } = req.body;
+        const { email, lang } = req.body;
         const user = await usersRepository.findOne({
             email
         });
@@ -149,7 +149,7 @@ async function recoveryPassword(req, res) {
         const url = `${HOST_WEB}/change-password/${token}`;
 
         res.render(
-            'recovery_password',
+            'recovery_password_'+lang,
             {
                 url,
                 layout: false,

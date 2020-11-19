@@ -9,7 +9,8 @@ const { sendMail } = require('../../utils/helpers')
 
 const {
     HOST_WEB,
-    APP_NAME
+    APP_NAME,
+    CONTACT_MAIL
 } = process.env;
 
 async function index(req, res) {
@@ -186,11 +187,11 @@ async function store(req, res) {
             const user = await usersRepository.findById(body.translator_id);
             switch (body.duration_type) {
                 case "0":
-                    total = parseInt(user.rate_hour) * parseInt(body.duration_amount)
+                    total = parseInt(user.rate_hour) * parseInt(body.duration_amount) + 5
                     break;
             
                 case "1":
-                    total = parseInt(user.rate_minute) * parseInt(body.duration_amount)
+                    total = parseInt(user.rate_minute) * parseInt(body.duration_amount) + 5
                     break;
             }
         const sender = await usersRepository.findById(body.translator_id);
@@ -212,8 +213,15 @@ async function store(req, res) {
                 amount: total
             });
 
-            statusMail(req, res, body.client_id, 0, "client")
-            statusMail(req, res, body.translator_id, 0, "translator")
+            let data = {
+                clientName: sender.firstname+" "+sender.lastname,
+                duration: body.duration_amount,
+                duration_type: body.duration_type,
+                date: moment(body.date).format('YYYY-MM-DD')
+            }
+
+            statusMail(req, res, body.client_id, 0, "client", req.body.lang, data)
+            statusMail(req, res, body.translator_id, 0, "translator", req.body.lang, data)
             
 
             return res
@@ -316,7 +324,7 @@ async function cancel(req, res) {
             { id: id }
         )
 
-        statusMail(req, res, service.client_id, 5, "client")
+        statusMail(req, res, service.client_id, 5, "client", req.body.lang)
 
         return res
             .status(201)
@@ -402,7 +410,7 @@ async function accept(req, res) {
             { id: id }
         )
 
-        statusMail(req, res, service.client_id, 1, "client")
+        statusMail(req, res, service.client_id, 1, "client", req.body.lang)
 
         return res
             .status(201)
@@ -451,7 +459,7 @@ async function reject(req, res) {
             { id: id }
         )
 
-        statusMail(req, res, service.client_id, 6)
+        statusMail(req, res, service.client_id, 6, '', req.body.lang)
 
         return res
             .status(201)
@@ -534,8 +542,15 @@ async function pay(req, res) {
             { id: id }
         )
 
-        statusMail(req, res, service.translator_id, 2, "translator")
-        statusMail(req, res, service.client_id, 2, "client")
+        let data = {
+            clientName: sender.firstname+" "+sender.lastname,
+            duration: service.duration_amount,
+            duration_type: service.duration_type,
+            date: moment(service.date).format('YYYY-MM-DD')
+        }
+
+        statusMail(req, res, service.translator_id, 2, "translator", req.body.lang, data)
+        statusMail(req, res, service.client_id, 2, "client", req.body.lang, data)
 
         return res
             .status(201)
@@ -571,6 +586,9 @@ async function finish(req, res) {
             { id: id }
         )
 
+        statusMail(req, res, service.translator_id, 3, "translator", req.body.lang)
+        statusMail(req, res, service.client_id, 3, "client", req.body.lang)
+
         return res
             .status(201)
             .send(
@@ -602,7 +620,7 @@ async function rate(req, res) {
         }
 
         await servicesRepository.update(
-            { rated: true },
+            { rated: true, status: "4" },
             { id: id }
         )
 
@@ -657,7 +675,7 @@ async function share(req, res) {
     }
 }
 
-async function statusMail(req, res, client_id, new_status, client_type, lang="ES") {
+async function statusMail(req, res, client_id, new_status, client_type, lang="ES", data={}) {
     try {
         const client = await usersRepository.findOne({
             id: client_id
@@ -679,37 +697,62 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
             case 0:
                 subject= "Servicio Creado"
                 if(client_type=="translator"){
-                    status = "creado"
-                    template = "new_order_translator_ES"
+                    template = "new_order_translator_"+lang
+                }
+                if(lang=="EN"){
+                    subject= "Service Created"
                 }
                 break;
             case 1:
                 subject= "Servicio Aceptado"
+                if(lang=="EN"){
+                    subject= "Service Accepted"
+                }
                 break;
             case 2:
                 subject= "Servicio Pagado"
                 if(client_type=="translator"){
-                    status = "pagado"
-                    template = "paid_order_translator_ES"
+                    template = "paid_order_translator_"+lang
+                }
+                if(lang=="EN"){
+                    subject= "Service Paid"
                 }
                 break;
             case 3:
                 subject= "Servicio Finalizado"
+                if(lang=="EN"){
+                    subject= "Service Finished"
+                }
                 break;
             case 5:
                 status = "cancelado";
                 subject = "Servicio cancelado"
-                template = "status_change"
+                template = "status_change_"+lang
+                if(lang=="EN"){
+                    subject= "Service Cancelled"
+                    status = "cancelled";
+                }
                 break;
             case 6:
                 status = "rechazado";
                 subject = "Servicio rechazado"
-                template = "status_change"
+                if(lang=="EN"){
+                    subject= "Service rejected"
+                    status = "rejected";
+                }
+                template = "status_change_"+lang
                 break;
         }
 
         const url = `${HOST_WEB}/services`;
 
+        if(lang=="EN"){
+            data.durationType == "0" ? data.durationType="hours" : data.durationType="minutes"
+        }else{
+            data.durationType == "0" ? data.durationType="horas" : data.durationType="minutos"
+        }
+        let mailto = client.email + "," + CONTACT_MAIL
+        console.log(mailto)
         res.render(
             template,
             {
@@ -719,12 +762,16 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
                 appName: APP_NAME,
                 contactName: APP_NAME,
                 userName: client.firstname,
-                contactMail: "info@cucu.us"
+                clientName: data.clientName,
+                duration: data.duration,
+                durationType: data.durationType,
+                startDate: data.date,
+                contactMail: CONTACT_MAIL
             },
             async (error, html) => {
                 let options = {
                     html,
-                    to: client.email,
+                    to: mailto,
                     text: subject,
                     subject: subject,
 
