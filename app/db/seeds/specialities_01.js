@@ -44,7 +44,7 @@ exports.seed = function(knex) {
         },
         {
             name_es: "Construcción",
-            name_en: "Building"
+            name_en: "Construction"
         },
         {
             name_es: "Cultural",
@@ -60,7 +60,7 @@ exports.seed = function(knex) {
         },
         {
             name_es: "Finanzas",
-            name_en: "Finances"
+            name_en: "Finance"
         },
         {
             name_es: "General",
@@ -80,7 +80,7 @@ exports.seed = function(knex) {
         },
         {
             name_es: "Jurídica",
-            name_en: "Juridical"
+            name_en: "Law"
         },
         {
             name_es: "Legal",

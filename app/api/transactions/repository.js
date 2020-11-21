@@ -97,6 +97,12 @@ class Repository extends Base {
         }
       })
 
+      .andWhere(function () {
+        if (name) {
+          this.orWhere(raw('lower(unaccent(client."firstname"))'), 'like', `%${name}%`);
+          this.orWhere(raw('lower(unaccent(client."lastname"))'), 'like', `%${name}%`);
+        }
+      })
 
       .andWhere(function () {
         if (status) {

@@ -121,7 +121,7 @@ async function confirmPayment(req, res) {
         }
         
         const intent = await stripe.paymentIntents.create({
-            amount: service.amount*100,
+            amount: Math.ceil(service.amount*100),
             currency: 'usd',
             customer: stripe_id, 
             receipt_email: user.email,

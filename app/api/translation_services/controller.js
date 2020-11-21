@@ -1,4 +1,5 @@
 const servicesRepository = require('./repository');
+const unavailabilitiesRepository = require('../unavailabilities/repository');
 const usersRepository = require('../users/repository');
 const notificationsController = require('../notifications/controller');
 const { validationResult } = require('express-validator');
@@ -185,13 +186,15 @@ async function store(req, res) {
             
             let total=0;
             const user = await usersRepository.findById(body.translator_id);
+            console.log(user.rate_minute)
+            console.log(parseFloat(user.rate_minute))
             switch (body.duration_type) {
                 case "0":
-                    total = parseInt(user.rate_hour) * parseInt(body.duration_amount) + 5
+                    total = parseFloat(user.rate_hour) * parseFloat(body.duration_amount) + 5
                     break;
             
                 case "1":
-                    total = parseInt(user.rate_minute) * parseInt(body.duration_amount) + 5
+                    total = parseFloat(user.rate_minute) * parseFloat(body.duration_amount) + 5
                     break;
             }
         const sender = await usersRepository.findById(body.translator_id);
@@ -411,6 +414,21 @@ async function accept(req, res) {
         )
 
         statusMail(req, res, service.client_id, 1, "client", req.body.lang)
+
+        let newTo;
+        if(service.duration_type=="0"){
+            newTo = moment(service.date).add(parseInt(service.duration_amount), 'hours').toDate()
+        }else{
+            newTo = moment(service.date).add(parseInt(service.duration_amount), 'minutes').toDate()
+        }
+        let remainder = 30 - (moment(newTo).minute() % 30);
+        newTo = moment(newTo).add(remainder, "minutes").toDate();
+
+        await unavailabilitiesRepository.create({
+            from: service.date,
+            to: newTo,
+            translator_id: service.translator_id
+        });
 
         return res
             .status(201)

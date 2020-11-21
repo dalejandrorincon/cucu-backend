@@ -5,6 +5,7 @@ const reviewsRepository = require('../reviews/repository');
 const platformsRepository = require('../platforms/repository');
 const servicesRepository = require('../translation_services/repository');
 const unavailabilitiesRepository = require('../unavailabilities/repository');
+const transactionsRepository = require('../transactions/repository');
 const transactionsController = require('../transactions/controller');
 
 const { formatError } = require('../../utils/helpers');
@@ -293,8 +294,14 @@ async function getTranslators(req, res) {
             users = users.filter(item => parseInt(item.rate_hour) >= parseInt(min_price_hour) && parseInt(item.rate_hour) <= parseInt(max_price_hour))
         }
 
-        if(min_experience!='' && min_experience!="0" && max_experience!=''){
-            users = users.filter(item => parseInt(item.labor_months) >= parseInt(min_experience) && parseInt(item.labor_months) <= parseInt(max_experience))
+        if(min_experience!='' && max_experience!=''){
+            if(parseInt(max_experience)<120){
+                users  = users.filter(item => parseInt(item.labor_months) <= parseInt(max_experience) )
+            }
+            if(parseInt(min_experience)>0){
+                users  = users.filter(item => parseInt(item.labor_months) >= parseInt(min_experience) )
+            }
+            console.log(parseInt(min_experience))
         }
 
         
@@ -396,8 +403,9 @@ async function getUser(req, res) {
             }
 
             if(user.role == "2"){
-                const services = await servicesRepository.getServicesByTranslator(1, 10, user.id)
-                user.total_services = services.total
+                const transactions = await transactionsRepository.getAllTransactionsTranslator(user.id)
+
+                user.total_services = transactions.length ? transactions.length : 0
 
                 let reviews = await  reviewsRepository.getUserReviews(user.id, "1")
 
