@@ -199,6 +199,11 @@ async function store(req, res) {
             }
         const sender = await usersRepository.findById(body.translator_id);
 
+            let service = await servicesRepository.create({
+                ...body,
+                amount: total
+            });
+
             let notifData ={
                 sender_id: body.client_id, 
                 type: "0", 
@@ -206,15 +211,11 @@ async function store(req, res) {
                 sender: {
                     firstname: sender.firstname,
                     lastname: sender.lastname
-                }
+                },
+                service_id: service.id
             }
 
             await notificationsController.create( req, res, notifData )
-
-            await servicesRepository.create({
-                ...body,
-                amount: total
-            });
 
             let data = {
                 clientName: sender.firstname+" "+sender.lastname,
@@ -317,10 +318,11 @@ async function cancel(req, res) {
             sender: {
                 firstname: sender.firstname,
                 lastname: sender.lastname
-            }
+            },
+            service_id: id
         }
 
-        await notificationsController.create( req, res, notifData )
+        //await notificationsController.create( req, res, notifData )
 
         await servicesRepository.update(
             { status: "5", cancel_reason: cancel_reason },
@@ -403,7 +405,8 @@ async function accept(req, res) {
             sender: {
                 firstname: sender.firstname,
                 lastname: sender.lastname
-            }
+            },
+            service_id: id
         }
 
         await notificationsController.create( req, res, notifData )
@@ -467,7 +470,8 @@ async function reject(req, res) {
             sender: {
                 firstname: sender.firstname,
                 lastname: sender.lastname
-            }
+            },
+            service_id: id
         }
 
         await notificationsController.create( req, res, notifData )
@@ -550,7 +554,8 @@ async function pay(req, res) {
             sender: {
                 firstname: sender.firstname,
                 lastname: sender.lastname
-            }
+            },
+            service_id: id
         }
 
         await notificationsController.create( req, res, notifData )

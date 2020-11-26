@@ -7,6 +7,7 @@ const fields = [
 	'receiver_id',
 	'sender_id',
 	'read',
+	'service_id',
 	'deleted'
 ];
 
