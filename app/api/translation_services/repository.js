@@ -273,10 +273,21 @@ class Repository extends Base {
 
       .andWhere(function () {
         if (name) {
-          this.orWhere(raw('lower(unaccent(client."firstname"))'), 'like', `%${name}%`);
-          this.orWhere(raw('lower(unaccent(client."lastname"))'), 'like', `%${name}%`);
+          if(name.includes(" ")){
+            let names = name.split(" ")
+            for (let i = 0; i < names.length; i++) {
+              if(i==0){
+                this.andWhere(raw('lower(unaccent(client."firstname"))'), 'like', `%${names[i]}%`);
+              }else{
+                this.andWhere(raw('lower(unaccent(client."lastname"))'), 'like', `%${names[i]}%`);
+              }
+            }
+          }else{
+            this.orWhere(raw('lower(unaccent(client."firstname"))'), 'like', `%${name}%`);
+            this.orWhere(raw('lower(unaccent(client."lastname"))'), 'like', `%${name}%`);
+          }
         }
-      })
+      })   
 
       .andWhere(function () {
         if (duration_type) {
@@ -391,13 +402,23 @@ class Repository extends Base {
         }
       })
 
-
       .andWhere(function () {
         if (name) {
-          this.orWhere(raw('lower(unaccent(translator."firstname"))'), 'like', `%${name}%`);
-          this.orWhere(raw('lower(unaccent(translator."lastname"))'), 'like', `%${name}%`);
+          if(name.includes(" ")){
+            let names = name.split(" ")
+            for (let i = 0; i < names.length; i++) {
+              if(i==0){
+                this.andWhere(raw('lower(unaccent(translator."firstname"))'), 'like', `%${names[i]}%`);
+              }else{
+                this.andWhere(raw('lower(unaccent(translator."lastname"))'), 'like', `%${names[i]}%`);
+              }
+            }
+          }else{
+            this.orWhere(raw('lower(unaccent(translator."firstname"))'), 'like', `%${name}%`);
+            this.orWhere(raw('lower(unaccent(translator."lastname"))'), 'like', `%${name}%`);
+          }
         }
-      })
+      }) 
 
       .andWhere(function () {
         if (duration_type) {
