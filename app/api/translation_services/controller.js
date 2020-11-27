@@ -770,9 +770,9 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
         const url = `${HOST_WEB}/services`;
 
         if(lang=="EN"){
-            data.durationType == "0" ? data.durationType="hours" : data.durationType="minutes"
+            data.duration_type == "0" ? data.duration_type="hours" : data.duration_type="minutes"
         }else{
-            data.durationType == "0" ? data.durationType="horas" : data.durationType="minutos"
+            data.duration_type == "0" ? data.duration_type="horas" : data.duration_type="minutos"
         }
         let mailto = client.email + "," + CONTACT_MAIL
         console.log(mailto)
@@ -787,7 +787,7 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
                 userName: client.firstname,
                 clientName: data.clientName,
                 duration: data.duration,
-                durationType: data.durationType,
+                durationType: data.duration_type,
                 startDate: data.date,
                 contactMail: CONTACT_MAIL
             },
