@@ -73,6 +73,28 @@ async function unavailabilitiesByUser(req, res) {
     }
 }
 
+async function allUnavailabilitiesByUser(req, res) {
+
+    const {
+        params: { id }
+    } = req;
+
+    try {
+
+        let unavailabilities = await unavailabilityRepository.getAllUserUnavailabilities(id);
+
+        return res.status(200).send([
+            ...unavailabilities
+        ]);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
+
+
+
 /* async function transactionsByUser(req, res) {
 
     const {
@@ -199,5 +221,6 @@ module.exports = {
     update,
     remove,
     getAll,
-    unavailabilitiesByUser
+    unavailabilitiesByUser,
+    allUnavailabilitiesByUser
 };
