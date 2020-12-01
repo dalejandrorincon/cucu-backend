@@ -258,8 +258,19 @@ class Repository extends Base {
       
       .andWhere(function () {
         if (name) {
-          this.orWhere(raw('lower(unaccent(users."firstname"))'), 'like', `%${name}%`);
-          this.orWhere(raw('lower(unaccent(users."lastname"))'), 'like', `%${name}%`);
+          if(name.includes(" ")){
+            let names = name.split(" ")
+            for (let i = 0; i < names.length; i++) {
+              if(i==0){
+                this.andWhere(raw('lower(unaccent(users."firstname"))'), 'like', `%${names[i]}%`);
+              }else{
+                this.andWhere(raw('lower(unaccent(users."lastname"))'), 'like', `%${names[i]}%`);
+              }
+            }
+          }else{
+            this.orWhere(raw('lower(unaccent(users."firstname"))'), 'like', `%${name}%`);
+            this.orWhere(raw('lower(unaccent(users."lastname"))'), 'like', `%${name}%`);
+          }
         }
       })         
 

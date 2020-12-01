@@ -58,6 +58,14 @@ class Repository extends Base {
       .orderBy("unavailabilities."+sort_by, sort_order)
   }
 
+  getAllUserUnavailabilities(id){
+    return this.model
+    .query()
+    .where("deleted", false)
+    .where("translator_id", id)
+    .orderBy("unavailabilities."+sort_by, sort_order)
+  }
+
   getAllUserUnavailabilities(userId){
     return this.model
       .query()

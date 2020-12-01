@@ -296,7 +296,7 @@ async function cancel(req, res) {
     try {
         const {
             params: { id },
-            body: { cancel_reason }
+            body: { cancel_reason, role }
         } = req;
 
         const service = await servicesRepository.findOne({
@@ -329,7 +329,13 @@ async function cancel(req, res) {
             { id: id }
         )
 
-        statusMail(req, res, service.client_id, 5, "client", req.body.lang)
+        let data = {role: role}
+        if(role=="2"){
+            statusMail(req, res, service.client_id, 5, "client", req.body.lang, data)
+        }else{
+            statusMail(req, res, service.translator_id, 5, "translator", req.body.lang, data)
+            statusMail(req, res, service.client_id, 5, "client", req.body.lang, data)
+        }
 
         return res
             .status(201)
@@ -720,6 +726,7 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
             case 0:
                 subject= "Servicio Creado"
                 if(client_type=="translator"){
+                    lang="EN"
                     template = "new_order_translator_"+lang
                 }
                 if(lang=="EN"){
@@ -728,13 +735,16 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
                 break;
             case 1:
                 subject= "Servicio Aceptado"
+                lang="EN"
                 if(lang=="EN"){
+                    template = "status_"+new_status+"_client_"+lang
                     subject= "Service Accepted"
                 }
                 break;
             case 2:
                 subject= "Servicio Pagado"
                 if(client_type=="translator"){
+                    lang="EN"
                     template = "paid_order_translator_"+lang
                 }
                 if(lang=="EN"){
@@ -748,31 +758,40 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
                 }
                 break;
             case 5:
-                status = "cancelado";
                 subject = "Servicio cancelado"
-                template = "status_change_"+lang
+                if(data.role=="2"){
+                    if(client_type=="client"){
+                        lang="EN"
+                    }
+                    template = "status_5_"+client_type+"_by_translator_"+lang
+                }else{
+                    if(client_type=="translator"){
+                        lang="EN"
+                    }
+                    template = "status_5_"+client_type+"_by_client_"+lang
+                }
                 if(lang=="EN"){
                     subject= "Service Cancelled"
                     status = "cancelled";
                 }
                 break;
             case 6:
-                status = "rechazado";
                 subject = "Servicio rechazado"
+                lang="EN"
                 if(lang=="EN"){
                     subject= "Service rejected"
                     status = "rejected";
+                    template = "status_"+new_status+"_client_"+lang
                 }
-                template = "status_change_"+lang
                 break;
         }
 
         const url = `${HOST_WEB}/services`;
 
         if(lang=="EN"){
-            data.durationType == "0" ? data.durationType="hours" : data.durationType="minutes"
+            data.duration_type == "0" ? data.duration_type="hours" : data.duration_type="minutes"
         }else{
-            data.durationType == "0" ? data.durationType="horas" : data.durationType="minutos"
+            data.duration_type == "0" ? data.duration_type="horas" : data.duration_type="minutos"
         }
         let mailto = client.email + "," + CONTACT_MAIL
         console.log(mailto)
@@ -787,7 +806,7 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
                 userName: client.firstname,
                 clientName: data.clientName,
                 duration: data.duration,
-                durationType: data.durationType,
+                durationType: data.duration_type,
                 startDate: data.date,
                 contactMail: CONTACT_MAIL
             },
