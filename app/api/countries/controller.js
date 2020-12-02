@@ -2,7 +2,7 @@ const countryRepository = require('./repository');
 const { validationResult } = require('express-validator');
 
 
-async function index(req, res) {
+/* async function index(req, res) {
 
     let {
         query: {
@@ -24,7 +24,7 @@ async function index(req, res) {
         console.error(error);
         return res.status(500).send({ message: error.message });
     }
-}
+} */
 
 
 async function getAll(req, res) {
@@ -38,8 +38,13 @@ async function getAll(req, res) {
 }
 
 async function index(req, res) {
+    let {
+        query: {
+            stripe = false
+        }
+    } = req;
     try {
-        const countries = await countryRepository.find().orderBy('name');
+        const countries = await countryRepository.getAllCountries(stripe);
         return res.status(200).send(countries);
     } catch (error) {
         console.error(error);

@@ -3,6 +3,7 @@ const Country = require('./entity');
 
 const fields = [
   'name',
+  'stripe_available',
   'deleted'
 ];
 
@@ -15,9 +16,15 @@ class Repository extends Base {
     return Country;
   }
 
-  getAllCountries() {
+  getAllCountries(stripe_available) {
     return this.model
       .query()
+      .orderBy('name')
+      .andWhere(function () {
+        if (stripe_available) {
+          this.orWhere('stripe_available', true);
+        }
+      })
       .where("deleted", false);
   }
 
