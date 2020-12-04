@@ -2,7 +2,8 @@ const Base = require('../base.repository');
 const Country = require('./entity');
 
 const fields = [
-  'name',
+  'name_es',
+  'name_en',
   'stripe_available',
   'deleted'
 ];
@@ -16,7 +17,7 @@ class Repository extends Base {
     return Country;
   }
 
-  getAllCountries(stripe_available) {
+  getAllCountries(stripe_available, lang) {
     return this.model
       .query()
       .orderBy('name')
@@ -25,7 +26,8 @@ class Repository extends Base {
           this.orWhere('stripe_available', true);
         }
       })
-      .where("deleted", false);
+      .where("deleted", false)
+      .orderBy('name_'+lang);
   }
 
   getCountries(page, page_limit, name) {

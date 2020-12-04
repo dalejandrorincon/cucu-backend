@@ -40,11 +40,12 @@ async function getAll(req, res) {
 async function index(req, res) {
     let {
         query: {
-            stripe = false
+            stripe = false,
+            lang = 'en'
         }
     } = req;
     try {
-        const countries = await countryRepository.getAllCountries(stripe);
+        const countries = await countryRepository.getAllCountries(stripe, lang);
         return res.status(200).send(countries);
     } catch (error) {
         console.error(error);
