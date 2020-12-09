@@ -215,6 +215,30 @@ async function remove(req, res) {
     }
 }
 
+
+async function removeByService(req, res, id) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty())
+            return res
+                .status(409)
+                .send({ errors: errors.formatWith(formatError).mapped() });
+        else {
+            let unavailabilities = await unavailabilityRepository.getByService(id);
+            console.log(unavailabilities)
+
+            for (let i = 0; i < unavailabilities.length; i++) {
+                const element = unavailabilities[i];
+                await unavailabilityRepository.deleteById(element.id)
+            }
+
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
 module.exports = {
     index,
     store,
@@ -222,5 +246,6 @@ module.exports = {
     remove,
     getAll,
     unavailabilitiesByUser,
-    allUnavailabilitiesByUser
+    allUnavailabilitiesByUser,
+    removeByService
 };
