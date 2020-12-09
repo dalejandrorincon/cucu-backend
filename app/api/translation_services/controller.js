@@ -2,6 +2,8 @@ const servicesRepository = require('./repository');
 const unavailabilitiesRepository = require('../unavailabilities/repository');
 const usersRepository = require('../users/repository');
 const notificationsController = require('../notifications/controller');
+const unavailabilityController = require('../unavailabilities/controller');
+
 const { validationResult } = require('express-validator');
 const moment = require('moment');
 const helper = require('../../utils/helpers');
@@ -183,6 +185,17 @@ async function store(req, res) {
                 .send({ errors: errors.formatWith(formatError).mapped() });
         else {
             const { body } = req;
+
+            const { authorization } = req.headers;
+
+            if (!authorization) {
+                return res.status(401).send({
+                    message: 'Olvidó autenticarse'
+                });
+            }
+
+            const token = authorization.replace("Bearer ", "")
+            const userId = await helper.decodeToken(token);
             
             let total=0;
             const user = await usersRepository.findById(body.translator_id);
@@ -197,7 +210,9 @@ async function store(req, res) {
                     total = parseFloat(user.rate_minute) * parseFloat(body.duration_amount) + 5
                     break;
             }
-        const sender = await usersRepository.findById(body.translator_id);
+            
+            const sender = await usersRepository.findById(body.translator_id);
+            const client = await usersRepository.findById(userId);
 
             let service = await servicesRepository.create({
                 ...body,
@@ -218,7 +233,7 @@ async function store(req, res) {
             await notificationsController.create( req, res, notifData )
 
             let data = {
-                clientName: sender.firstname+" "+sender.lastname,
+                clientName: client.firstname+" "+client.lastname,
                 duration: body.duration_amount,
                 duration_type: body.duration_type,
                 date: moment(body.date).format('YYYY-MM-DD')
@@ -337,6 +352,8 @@ async function cancel(req, res) {
             statusMail(req, res, service.client_id, 5, "client", req.body.lang, data)
         }
 
+        await unavailabilityController.removeByService( req, res, id )
+
         return res
             .status(201)
             .send(
@@ -436,7 +453,8 @@ async function accept(req, res) {
         await unavailabilitiesRepository.create({
             from: service.date,
             to: newTo,
-            translator_id: service.translator_id
+            translator_id: service.translator_id,
+            service_id: id
         });
 
         return res
@@ -488,6 +506,8 @@ async function reject(req, res) {
         )
 
         statusMail(req, res, service.client_id, 6, '', req.body.lang)
+
+        await unavailabilityController.removeByService( req, res, id )
 
         return res
             .status(201)
@@ -788,10 +808,13 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
 
         const url = `${HOST_WEB}/services`;
 
+        console.log(data)
+
+        let durationType;
         if(lang=="EN"){
-            data.duration_type == "0" ? data.duration_type="hours" : data.duration_type="minutes"
+            data.duration_type == "0" ? durationType="hours" : durationType="minutes"
         }else{
-            data.duration_type == "0" ? data.duration_type="horas" : data.duration_type="minutos"
+            data.duration_type == "0" ? durationType="horas" : durationType="minutos"
         }
         let mailto = client.email + "," + CONTACT_MAIL
         console.log(mailto)
@@ -806,7 +829,7 @@ async function statusMail(req, res, client_id, new_status, client_type, lang="ES
                 userName: client.firstname,
                 clientName: data.clientName,
                 duration: data.duration,
-                durationType: data.duration_type,
+                durationType: durationType,
                 startDate: data.date,
                 contactMail: CONTACT_MAIL
             },

@@ -161,12 +161,13 @@ async function getTranslators(req, res) {
             approved_translator = '1',
             sort_by = 'created_at',
             sort_order = 'desc',
-            disabled = 'false'
+            disabled = 'false',
+            random = 'false'
         }
     } = req;
 
     try {
-        let users = await usersRepository.getTranslators(name, speciality_id, languages, approved_translator, sort_by, sort_order, disabled);
+        let users = await usersRepository.getTranslators(name, speciality_id, languages, approved_translator, sort_by, sort_order, disabled, random);
         const repoLanguages = await languagesRepository.getAllLanguages();
         const specialities = await specialitiesRepository.getAllSpecialities()
         const platforms = await platformsRepository.getAllPlatforms()
