@@ -199,7 +199,7 @@ class Repository extends Base {
   }
 
 
-  getTranslators(name, speciality_id, languages, approved_translator, sort_by, sort_order, disabled, random) {
+  getTranslators(name, speciality_id, languages, approved_translator, sort_by, sort_order, disabled) {
     return this.model
       .query()
       .select(
@@ -238,7 +238,6 @@ class Repository extends Base {
       .where("deleted", false)
       .where("role", "2")
       .where("approved_translator", approved_translator )
-      //.orderBy(random=="true" ? raw('RANDOM()') : sort_by, sort_order )
       .orderBy(sort_by, sort_order)
 
 
