@@ -446,9 +446,11 @@ async function accept(req, res) {
             newTo = moment(service.date).add(parseInt(service.duration_amount), 'hours').toDate()
         }else{
             newTo = moment(service.date).add(parseInt(service.duration_amount), 'minutes').toDate()
+            if(parseInt(service.duration_amount)%30!=0){
+                let remainder = 30 - (moment(newTo).minute() % 30);
+                newTo = moment(newTo).add(remainder, "minutes").toDate();
+            }
         }
-        let remainder = 30 - (moment(newTo).minute() % 30);
-        newTo = moment(newTo).add(remainder, "minutes").toDate();
 
         await unavailabilitiesRepository.create({
             from: service.date,
