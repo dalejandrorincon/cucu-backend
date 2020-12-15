@@ -220,7 +220,9 @@ class Repository extends Base {
     if(sort_by=="duration_amount"){
       sort_by=raw("duration_amount::int")
     }
-
+    if(sort_by=="amount"){
+      sort_by=raw("amount::float")
+    }
     if(sort_by=="created_at"){
       sort_by="translation_services.created_at"
     }
@@ -354,6 +356,9 @@ class Repository extends Base {
     }
     if(sort_by=="duration_amount"){
       sort_by=raw("duration_amount::int")
+    }
+    if(sort_by=="amount"){
+      sort_by=raw("amount::float")
     }
     if(sort_by=="created_at"){
       sort_by="translation_services.created_at"
