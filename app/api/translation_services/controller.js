@@ -637,7 +637,7 @@ async function finish(req, res) {
             { id: id }
         )
 
-        statusMail(req, res, service.translator_id, 3, "translator", req.body.lang)
+        //statusMail(req, res, service.translator_id, 3, "translator", req.body.lang)
         statusMail(req, res, service.client_id, 3, "client", req.body.lang)
 
         return res
