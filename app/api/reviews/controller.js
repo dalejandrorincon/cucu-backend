@@ -186,7 +186,9 @@ async function store(req, res) {
                 ...body
             });
 
-            reviewMail(req, res, body)
+            if(body.description && body.description!=""){
+                reviewMail(req, res, body)
+            }
 
             return res
                 .status(201)
