@@ -2,7 +2,13 @@ const reviewRepository = require('./repository');
 const { validationResult } = require('express-validator');
 const helper = require('../../utils/helpers');
 const usersRepository = require('../users/repository');
+const servicesRepository = require('../translation_services/repository');
 
+const {
+    APP_NAME,
+    CONTACT_MAIL
+} = process.env;
+const { sendMail } = require('../../utils/helpers')
 
 async function index(req, res) {
 
@@ -180,6 +186,8 @@ async function store(req, res) {
                 ...body
             });
 
+            reviewMail(req, res, body)
+
             return res
                 .status(201)
                 .send({ message: 'Review creado exitosamente' });
@@ -272,6 +280,52 @@ async function approval(req, res) {
     }
 }
 
+
+async function reviewMail(req, res, review) {
+    try {
+        const client = await usersRepository.findOne({
+            id: review.client_id
+        });
+
+        const translator = await usersRepository.findOne({
+            id: review.translator_id
+        });
+
+        const service = await servicesRepository.findOne({
+            id: review.service_id
+        });
+
+        let template = "review_admin"
+        let subject = "Nuevo comentario de cliente"
+        let mailto = CONTACT_MAIL
+
+        res.render(
+            template,
+            {
+                layout: false,
+                clientName: client.firstname+" "+client.lastname,
+                translatorName: translator.firstname+" "+translator.lastname,
+                startDate: service.date,
+                commentary: review.description,
+                grade: review.grade,
+                appName: APP_NAME,
+            },
+            async (error, html) => {
+                let options = {
+                    html,
+                    to: mailto,
+                    text: subject,
+                    subject: subject,
+
+                };
+                await sendMail(options);
+            }
+        );
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
 
 
 module.exports = {
