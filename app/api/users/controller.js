@@ -534,16 +534,19 @@ async function update(req, res) {
 
             const user = await usersRepository.findOne({ id: tokenUser });
 
-            if(body.email==user.email){
-                delete body.email
-            }else{
-                const emailOwner = await usersRepository.findOne({ email: body.email });
-                if(emailOwner){
-                    return res
-                        .status(401)
-                        .send({ message: 'Correo pertenece a otro usuario', code: "MAIL_IN_USE" });
+            if(body.email){
+                if(body.email==user.email){
+                    delete body.email
+                }else{
+                    const emailOwner = await usersRepository.findOne({ email: body.email });
+                    if(emailOwner){
+                        return res
+                            .status(401)
+                            .send({ message: 'Correo pertenece a otro usuario', code: "MAIL_IN_USE" });
+                    }
                 }
             }
+
 
             await usersRepository.update(
                 { ...body },
