@@ -20,14 +20,13 @@ class Repository extends Base {
   getAllCountries(stripe_available, lang) {
     return this.model
       .query()
-      .orderBy('name')
+      .orderBy(lang ? "name_"+lang : "name")
       .andWhere(function () {
         if (stripe_available) {
           this.orWhere('stripe_available', true);
         }
       })
       .where("deleted", false)
-      .orderBy('name_'+lang);
   }
 
   getCountries(page, page_limit, name) {
