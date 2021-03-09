@@ -4,7 +4,7 @@ const servicesRepository = require('../translation_services/repository');
 
 const { validationResult } = require('express-validator');
 const helper = require('../../utils/helpers');
-
+const moment = require('moment');
 
 async function index(req, res) {
 
@@ -171,7 +171,8 @@ async function storeOnPay(req, res) {
                 amount: service.amount,
                 translator_id: service.translator_id,
                 client_id: service.client_id,
-                service_id: service.id
+                service_id: service.id,
+                date: moment()
             }
 
             console.log(data)

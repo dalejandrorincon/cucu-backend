@@ -10,6 +10,7 @@ const fields = [
   'translator_id',
   'client_id',
   'service_id',
+  'created_at',
   'deleted'
 ];
 
@@ -80,7 +81,8 @@ class Repository extends Base {
         'transactions.id',
         'transactions.date',
         'transactions.amount',
-        'transactions.payment_id'
+        'transactions.payment_id',
+        'transactions.created_at'
       )
       .where("transactions.deleted", false)
       .where("transactions.translator_id", userId)
