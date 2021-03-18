@@ -3,27 +3,36 @@ const router = express.Router();
 const controller = require('./controller');
 const multer = require('multer')()
 
-router.get('/', controller.index);
-router.get('/translator', controller.servicesByTranslator);
-router.get('/client', controller.servicesByClient);
+const {
+  isAuthenticated,
+  isRole  
+} = require('../middlewares/auth');
 
-router.get('/all', controller.getAll);
-router.get('/:id', controller.getService);
+var adminCheck = (req, res, next) => {
+  isRole(req, res, next, ['1']);
+}
 
-router.post('/', controller.store);
-router.put('/cancel/:id', controller.cancel);
-//router.put('/start/:id', controller.start);
-router.put('/pay/:id', controller.pay);
-router.put('/accept/:id', controller.accept);
-router.put('/reject/:id', controller.reject);
-router.put('/finish/:id', controller.finish);
-router.put('/reprogram/:id', controller.update);
-router.put('/rate/:id', controller.rate);
-router.put('/:id', controller.update);
-router.put('/share/:id', controller.share);
+router.get('/', isAuthenticated, controller.index);
+router.get('/translator', isAuthenticated, controller.servicesByTranslator);
+router.get('/client', isAuthenticated, controller.servicesByClient);
+
+router.get('/all', adminCheck, controller.getAll);
+router.get('/:id', isAuthenticated, controller.getService);
+
+router.post('/', isAuthenticated, controller.store);
+router.put('/cancel/:id', isAuthenticated, controller.cancel);
+//router.put('/start/:id', isAuthenticated, controller.start);
+router.put('/pay/:id', isAuthenticated, controller.pay);
+router.put('/accept/:id', isAuthenticated, controller.accept);
+router.put('/reject/:id', isAuthenticated, controller.reject);
+router.put('/finish/:id', isAuthenticated, controller.finish);
+router.put('/reprogram/:id', isAuthenticated, controller.update);
+router.put('/rate/:id', isAuthenticated, controller.rate);
+router.put('/:id', isAuthenticated, controller.update);
+router.put('/share/:id', isAuthenticated, controller.share);
 
 
-router.delete('/:id', controller.remove);
+router.delete('/:id', isAuthenticated, controller.remove);
 router.post('/image', multer.array('files'), (req, res) => {
   controller.uploadFile(req, res)
 })

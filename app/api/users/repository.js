@@ -206,9 +206,6 @@ class Repository extends Base {
         'id',
         'firstname',
         'lastname',
-        'document',
-        'phone',
-        'email',
         'role',
         'disabled',
         'rate_minute',
@@ -218,18 +215,13 @@ class Repository extends Base {
         'country',
         'city',
         'department_id',
-        'address_1',
-        'address_2',
         'nationality',
-        'description',
         'languages',
         'certifications',
         'specialities',
         'work_experience',
         'image_url',
         'unavailable',
-        'address_additional',
-        'approved_translator',
         'remote_tools',
         'labor_months',
         'created_at'
@@ -316,6 +308,36 @@ class Repository extends Base {
       )
       .where("deleted", false)
       .orderBy('created_at', 'desc')
+      .where("id", userId )
+  }
+
+  getUserSimple(userId) {
+    return this.model
+      .query()
+      .select(
+        'id',
+        'firstname',
+        'lastname',
+        'role',
+        'disabled',
+        'rate_minute',
+        'rate_hour',
+        'country_id',
+        'city_id',
+        'country',
+        'city',
+        'department_id',
+        'nationality',
+        'description',
+        'languages',
+        'specialities',
+        'work_experience',
+        'unavailable',
+        'image_url',
+        'disabled',
+        'unavailable',
+        'remote_tools'
+      )
       .where("id", userId )
   }
 }
