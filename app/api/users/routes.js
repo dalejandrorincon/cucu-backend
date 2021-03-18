@@ -13,14 +13,14 @@ var adminCheck = (req, res, next) => {
 
 const multer = require('multer')()
 
-router.get('/', controller.index);
-router.get('/translators', controller.getTranslators);
-router.get('/admins', controller.getAdmins);
-router.get('/clients', controller.getClients);
+router.get('/', adminCheck, controller.index);
+router.get('/translators', isAuthenticated, controller.getTranslators);
+//router.get('/admins', adminCheck, controller.getAdmins);
+//router.get('/clients', adminCheck, controller.getClients);
 router.get('/:id', controller.getUser);
 router.post('/', validators('store'), controller.store);
-router.post('/set-unavailability', controller.setUnavailability);
-router.post('/set-availability', controller.setAvailability);
+//router.post('/set-unavailability', controller.setUnavailability);
+//router.post('/set-availability', controller.setAvailability);
 router.put('/', isAuthenticated, controller.update);
 router.put('/password', isAuthenticated, validators('password'), controller.updatePassword);
 router.put('/disable', isAuthenticated, isRole, controller.disable);

@@ -346,10 +346,24 @@ async function getUser(req, res) {
     try {
 
         const {
+            headers: { authorization },
             params: { id }
         } = req;
+        
+        let userId
+        
+        if(authorization){
+            userId = await decodeToken(authorization.replace("Bearer ", ""));
+        }
+        
+        let user;
 
-        let user = await usersRepository.findById(id);
+        if(userId==id){
+            user = await usersRepository.findById(id);
+        }else{
+            let rep = await usersRepository.getUserSimple(id)
+            user = rep[0]
+        }
 
         const repoLanguages = await languagesRepository.getAllLanguages();
         const specialities = await specialitiesRepository.getAllSpecialities()
@@ -410,6 +424,8 @@ async function getUser(req, res) {
                 let reviews = await  reviewsRepository.getUserReviews(user.id, "1")
 
                 user.rating = null
+
+                user.total_ratings = 0
 
                 if(reviews.length){
                     let avg = 0
