@@ -332,6 +332,7 @@ class Repository extends Base {
         'languages',
         'specialities',
         'work_experience',
+        'labor_months',
         'unavailable',
         'image_url',
         'disabled',
