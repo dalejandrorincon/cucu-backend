@@ -3,6 +3,7 @@ const languagesRepository = require('../languages/repository');
 const specialitiesRepository = require('../specialities/repository');
 const reviewsRepository = require('../reviews/repository');
 const platformsRepository = require('../platforms/repository');
+const serRepository = require('../services/repository')
 const servicesRepository = require('../translation_services/repository');
 const unavailabilitiesRepository = require('../unavailabilities/repository');
 const transactionsRepository = require('../transactions/repository');
@@ -38,7 +39,7 @@ async function index(req, res) {
     try {
         const users = await usersRepository.getUsers(page, page_limit, name, email, disabled, city_id, department_id, country_id);
         const languages = await languagesRepository.getAllLanguages();
-        const specialities = await specialitiesRepository.getAllSpecialities()
+        const specialities = await specialitiesRepository.getAllSpecialities();
 
 
         users.results.forEach(element => {
@@ -148,12 +149,23 @@ async function getTranslators(req, res) {
             page_limit = 10,
             name = '',
             speciality_id = '',
+            translator_service_id = '',
             languages = '',
             grade = '',
             min_price_minute = '',
             max_price_minute = '',
             min_price_hour = '',
             max_price_hour = '',
+            min_price_page= '',
+            max_price_page= '',
+            min_halfday = '',
+            max_halfday = '',
+            min_fullday = '',
+            max_fullday='',
+            min_s_rate_min= '',
+            max_s_rate_min= '',
+            min_v_rate_min= '',
+            max_v_rate_min= '',
             min_experience = '',
             max_experience = '',
             min_available_time = '',
@@ -161,16 +173,21 @@ async function getTranslators(req, res) {
             approved_translator = '1',
             sort_by = 'created_at',
             sort_order = 'desc',
-            disabled = 'false'
+            disabled = 'false',
+            sworn = '',
+            notsworn= '',
+            simultaneous = '',
+            consecutive = '',
         }
     } = req;
 
     try {
-        let users = await usersRepository.getTranslators(name, speciality_id, languages, approved_translator, sort_by, sort_order, disabled);
+        let users = await usersRepository.getTranslators(name, speciality_id,translator_service_id, languages, approved_translator, sort_by, sort_order, disabled);
         const repoLanguages = await languagesRepository.getAllLanguages();
         const specialities = await specialitiesRepository.getAllSpecialities()
         const platforms = await platformsRepository.getAllPlatforms()
-
+        const translator_services = await serRepository.getAllSer()
+        
         for (let i = 0; i < users.length; i++) {
 
             const element = users[i];
@@ -201,6 +218,17 @@ async function getTranslators(req, res) {
                     }
                 });
 
+            }
+            
+            if(element.translator_services){
+                let cached = JSON.parse(element.translator_services);
+                element.translator_services=[]
+                cached.forEach(service => {
+                    let newService = (translator_services.filter(ser => ser.id == service))
+                    if(newService[0]){
+                    element.translator_services.push(...newService)
+                    }
+                });
             }
 
             let reviews = await  reviewsRepository.getUserReviews(element.id, "1")
@@ -285,6 +313,18 @@ async function getTranslators(req, res) {
         if(grade){
             users = users.filter(item => item.rating >= grade);
         }
+        if(simultaneous){
+            users = users.filter(item => item.simultaneous == "true")
+        }
+        if(consecutive){
+            users = users.filter(item => item.consecutive == "true")
+        }
+        if(sworn){
+            users = users.filter(item => item.sworn == "true")
+        }
+        if(notsworn){
+            users = users.filter(item => item.notsworn == "true")
+        }
 
         if(min_price_minute!='' && max_price_minute!=''){
             users = users.filter(item => parseFloat(item.rate_minute) >= parseFloat(min_price_minute) && parseFloat(item.rate_minute) <= parseFloat(max_price_minute))
@@ -292,6 +332,24 @@ async function getTranslators(req, res) {
 
         if(min_price_hour!='' && max_price_hour!=''){
             users = users.filter(item => parseFloat(item.rate_hour) >= parseFloat(min_price_hour) && parseFloat(item.rate_hour) <= parseFloat(max_price_hour))
+        }
+
+        if(min_halfday!='' && max_halfday!=''){
+            users = users.filter(item => parseFloat(item.half_day) >= parseFloat(min_halfday) && parseFloat(item.half_day) <= parseFloat(max_halfday))
+        }
+        if(min_fullday!='' && max_fullday!=''){
+            users = users.filter(item => parseFloat(item.full_day) >= parseFloat(min_fullday) && parseFloat(item.full_day) <= parseFloat(max_fullday))
+        }
+        
+        if(min_price_page!='' && max_price_page!=''){
+            users = users.filter(item => parseFloat(item.rate_page) >= parseFloat(min_price_page) && parseFloat(item.rate_page) <= parseFloat(max_price_page))
+        }
+
+        if(min_s_rate_min!='' && max_s_rate_min!=''){
+            users = users.filter(item => parseFloat(item.s_rate_min) >= parseFloat(min_s_rate_min) && parseFloat(item.s_rate_min) <= parseFloat(max_s_rate_min))
+        }
+        if(min_v_rate_min!='' && max_v_rate_min!=''){
+            users = users.filter(item => parseFloat(item.v_rate_min) >= parseFloat(min_v_rate_min) && parseFloat(item.v_rate_min) <= parseFloat(max_v_rate_min))
         }
 
         if(min_experience!='' && max_experience!=''){
@@ -368,7 +426,9 @@ async function getUser(req, res) {
         const repoLanguages = await languagesRepository.getAllLanguages();
         const specialities = await specialitiesRepository.getAllSpecialities()
         const platforms = await platformsRepository.getAllPlatforms()
-
+        const translator_services = await serRepository.getAllSer()
+        // console.log(translator_services)
+        // console.log(specialities)
         if(user){
             delete user.password
             
@@ -415,6 +475,23 @@ async function getUser(req, res) {
                 });
 
             }
+            if(user.translator_services){
+                let cached = JSON.parse(user.translator_services);
+              
+                //console.log(cached,"translator_services")
+                
+                user.translator_services=[]
+                
+                cached.forEach(service => {
+                    let newService = (translator_services.filter(ser => ser.id == service))
+                    console.log(newService)
+                    if(newService[0]){
+                        user.translator_services.push(...newService)
+                    }
+                });
+            }
+            
+            console.log(user,"user")
 
             if(user.role == "2"){
                 const transactions = await transactionsRepository.getAllTransactionsTranslator(user.id)

@@ -14,6 +14,15 @@ const fields = [
   'deleted',
   'rate_minute',
   'rate_hour',
+  'half_day',
+  'full_day',
+  'rate_page',
+  's_rate_min',
+  'v_rate_min',
+  'sworn',
+  'notsworn',
+  'simultaneous',
+  'consecutive',
   'country_id',
   'city_id',
   'country',
@@ -33,6 +42,7 @@ const fields = [
   'address_additional',
   'approved_translator',
   'remote_tools',
+  'translator_services',
   'admin_permissions',
   'created_at',
   'labor_months',
@@ -79,6 +89,15 @@ class Repository extends Base {
         'labor_months',
         'rate_minute',
         'rate_hour',
+        'half_day',
+        'full_day',
+        'rate_page',
+        's_rate_min',
+        'v_rate_min',
+        'sworn',
+        'notsworn',
+        'simultaneous',
+        'consecutive',
       )
       .where("deleted", false)
       .orderBy('created_at')
@@ -199,7 +218,7 @@ class Repository extends Base {
   }
 
 
-  getTranslators(name, speciality_id, languages, approved_translator, sort_by, sort_order, disabled) {
+  getTranslators(name, speciality_id, translator_service_id, languages, approved_translator, sort_by, sort_order, disabled) {
     return this.model
       .query()
       .select(
@@ -210,6 +229,15 @@ class Repository extends Base {
         'disabled',
         'rate_minute',
         'rate_hour',
+        'half_day',
+        'full_day',
+        'rate_page',
+        's_rate_min',
+        'v_rate_min',
+        'sworn',
+        'notsworn',
+        'simultaneous',
+        'consecutive',
         'country_id',
         'city_id',
         'country',
@@ -223,6 +251,7 @@ class Repository extends Base {
         'image_url',
         'unavailable',
         'remote_tools',
+        'translator_services',
         'labor_months',
         'created_at'
       )
@@ -239,6 +268,14 @@ class Repository extends Base {
           this.whereJsonSupersetOf('specialities', parsed)
         }
       })
+      .andWhere(function () {
+        if(translator_service_id){
+          let parsed = translator_service_id
+          console.log(parsed,"service")
+          this.whereJsonSupersetOf('translator_services',parsed)
+        }
+      })
+      
 
       /* .andWhere(function () {
         if(languages){
@@ -283,6 +320,15 @@ class Repository extends Base {
         'disabled',
         'rate_minute',
         'rate_hour',
+        'half_day',
+        'full_day',
+        'rate_page',
+        's_rate_min',
+        'v_rate_min',
+        'sworn',
+        'notsworn',
+        'simultaneous',
+        'consecutive',
         'country_id',
         'city_id',
         'country',
@@ -303,6 +349,7 @@ class Repository extends Base {
         'address_additional',
         'approved_translator',
         'remote_tools',
+        'translator_services',
         'admin_permissions',
         'stripe_id'
       )
@@ -322,6 +369,15 @@ class Repository extends Base {
         'disabled',
         'rate_minute',
         'rate_hour',
+        'half_day',
+        'full_day',
+        'rate_page',
+        's_rate_min',
+        'v_rate_min',
+        'sworn',
+        'notsworn',
+        'simultaneous',
+        'consecutive',
         'country_id',
         'city_id',
         'country',
@@ -337,7 +393,11 @@ class Repository extends Base {
         'image_url',
         'disabled',
         'unavailable',
-        'remote_tools'
+        'remote_tools',
+        'translator_services',
+        'certifications',
+        'phone',
+        'email'
       )
       .where("id", userId )
   }

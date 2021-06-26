@@ -87,7 +87,7 @@ class Repository extends Base {
           builder.select('firstname', 'lastname', 'id', 'image_url');
         },
         selectNamesAndRate(builder) {
-          builder.select('firstname', 'lastname', 'id', 'rate_minute','rate_hour', 'image_url');
+          builder.select('firstname', 'lastname', 'id', 'rate_minute','rate_hour','rate_page','half_day','full_day','s_rate_min','v_rate_min', 'image_url');
         }
       })
   }
@@ -147,7 +147,7 @@ class Repository extends Base {
           builder.select('firstname', 'lastname', 'id', 'image_url');
         },
         selectNamesAndRate(builder) {
-          builder.select('firstname', 'lastname', 'id', 'rate_minute','rate_hour', 'image_url');
+          builder.select('firstname', 'lastname', 'id', 'rate_minute','rate_hour','rate_page','half_day','full_day','s_rate_min','v_rate_min', 'image_url');
         }
       })
 
@@ -268,7 +268,7 @@ class Repository extends Base {
           builder.select('firstname', 'lastname', 'id', 'image_url');
         },
         selectNamesAndRate(builder) {
-          builder.select('firstname', 'lastname', 'id', 'rate_minute','rate_hour', 'image_url');
+          builder.select('firstname', 'lastname', 'id', 'rate_minute','rate_hour','rate_page','half_day','full_day','s_rate_min','v_rate_min', 'image_url');
         }
       })
 
@@ -403,7 +403,7 @@ class Repository extends Base {
           builder.select('firstname', 'lastname', 'id', 'image_url');
         },
         selectNamesAndRate(builder) {
-          builder.select('firstname', 'lastname', 'id', 'rate_minute','rate_hour', 'image_url');
+          builder.select('firstname', 'lastname', 'id', 'rate_minute','rate_hour','rate_page','half_day','full_day','s_rate_min','v_rate_min', 'image_url');
         }
       })
 

@@ -13,6 +13,7 @@ const TABLES = {
     notifications: 'notifications',
     banks: 'banks',
     payment_data: 'payment_data',
+    services: 'services',
 
 };
 
