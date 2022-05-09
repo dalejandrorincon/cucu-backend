@@ -37,7 +37,7 @@ async function index(req, res) {
     } = req;
 
     try {
-        const services = await servicesRepository.getServices(page, page_limit, name, status, service_site, service_type, client_id, translator_id, amount, min_date, max_date, sort_by, sort_order);
+        const services = await servicesRepository.getServices(page, page_limit, name, status, sub_service,service_site, service_type, client_id, translator_id, amount, min_date, max_date, sort_by, sort_order);
         return res.status(200).send({
             ...services,
             page: parseInt(page),
@@ -205,7 +205,6 @@ async function store(req, res) {
                 case "0":
                     total = parseFloat(user.rate_hour) * parseFloat(body.duration_amount)   
                     break;
-            
                 case "1":
                     total = parseFloat(user.rate_minute) * parseFloat(body.duration_amount)
                     break;

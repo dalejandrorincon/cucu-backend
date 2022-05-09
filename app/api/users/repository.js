@@ -265,6 +265,7 @@ class Repository extends Base {
       .andWhere(function () {
         if(speciality_id){
           let parsed = JSON.parse(speciality_id)
+          //console.log(parsed,"especiality")
           this.whereJsonSupersetOf('specialities', parsed)
         }
       })

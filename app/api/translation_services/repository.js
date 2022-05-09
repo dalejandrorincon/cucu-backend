@@ -9,7 +9,7 @@ const fields = [
   'service_type',
   'url',
   'duration_amount',
-  'duration_type',
+  'duration_type',  
   'platform',
   'date',
   'start_date',
@@ -171,6 +171,7 @@ class Repository extends Base {
           this.orWhere("translation_services.service_type", service_type);
         }
       })
+      
       .andWhere(function () {
         if (client_id) {
           this.orWhere("translation_services.client_id", client_id);
@@ -312,6 +313,7 @@ class Repository extends Base {
           this.orWhere("translation_services.service_type", service_type);
         }
       })
+      
       .andWhere(function () {
         if (client_id) {
           this.orWhere("translation_services.client_id", client_id);
@@ -389,10 +391,11 @@ class Repository extends Base {
         'translation_services.paid_status',
         'translation_services.rated',
         'translation_services.platform_other'
+
       )
       .where("translation_services.deleted", false)
       .where("translation_services.client_id", userId)
-      //.innerJoin('platforms as platform', 'platform.id', 'translation_services.platform_id')      
+            
       .innerJoin('users as client', 'client.id', 'translation_services.client_id')
       .innerJoin('users as translator', 'translator.id', 'translation_services.translator_id')
       .withGraphFetched('platform')
@@ -446,6 +449,7 @@ class Repository extends Base {
           this.orWhere("translation_services.service_type", service_type);
         }
       })
+      
       .andWhere(function () {
         if (translator_id) {
           this.orWhere("translation_services.translator_id", translator_id);

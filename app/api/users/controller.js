@@ -71,6 +71,8 @@ async function index(req, res) {
                 });
 
             }
+            
+            
         });
         
         return res.status(200).send({
@@ -148,6 +150,7 @@ async function getTranslators(req, res) {
             page = 1,
             page_limit = 10,
             name = '',
+            city= "",
             speciality_id = '',
             translator_service_id = '',
             languages = '',
@@ -207,6 +210,8 @@ async function getTranslators(req, res) {
                 });
             }
 
+            
+
             //console.log(specialities)
             if(element.specialities){
                 let cached = element.specialities;
@@ -252,6 +257,10 @@ async function getTranslators(req, res) {
                 element.total_experience_years = Math.floor(element.labor_months/12)                
             }
 
+            if(city){
+                users = users.filter(item => item.city == city)
+            }
+
             if(element.remote_tools){
                 let cached = element.remote_tools;
                 element.remote_tools=[]
@@ -263,6 +272,8 @@ async function getTranslators(req, res) {
                 });
 
             }
+           
+            
 
             if(element.unavailable==false || ( min_available_time!='' && max_available_time!='' ) ){
 
@@ -404,15 +415,15 @@ async function getUser(req, res) {
     try {
 
         const {
-            headers: { authorization },
+            // headers: { authorization },
             params: { id }
         } = req;
         
         let userId
         
-        if(authorization){
-            userId = await decodeToken(authorization.replace("Bearer ", ""));
-        }
+        // if(authorization){
+        //     userId = await decodeToken(authorization.replace("Bearer ", ""));
+        // }
         
         let user;
 
@@ -459,13 +470,15 @@ async function getUser(req, res) {
                 });
 
             } 
+            
 
             if(user.labor_months){
                 user.total_experience_years = Math.floor(user.labor_months/12)                
             }
-
+            
             if(user.remote_tools){
                 let cached = user.remote_tools;
+                 //console.log(cached,"remote_tools")
                 user.remote_tools=[]
                 cached.forEach(platform => {
                     let newPlatform = (platforms.filter(plat => plat.id == platform))

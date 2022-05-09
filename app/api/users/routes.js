@@ -14,7 +14,7 @@ var adminCheck = (req, res, next) => {
 const multer = require('multer')()
 
 router.get('/', adminCheck, controller.index);
-router.get('/translators', isAuthenticated, controller.getTranslators);
+router.get('/translators', controller.getTranslators);
 //router.get('/admins', adminCheck, controller.getAdmins);
 //router.get('/clients', adminCheck, controller.getClients);
 router.get('/:id', controller.getUser);
